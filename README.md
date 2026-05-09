@@ -97,7 +97,6 @@ classDiagram
     }
 
     class FlightStatus {
-        <<enumeration>>
         SCHEDULED
         APPROVED
         DEPARTED
