@@ -26,6 +26,93 @@ Un aeropuerto internacional necesita un sistema para administrar el registro de 
 
 ## Diagrama UML
 
+```mermaid
+classDiagram
+
+    class Airport {
+        +name : String
+        +baggage_limit : double
+        +extra_baggage : double
+        +fuel_cost_per_liter : double
+        +register_passenger(passenger : Passenger)
+        +validate_available_seats(flight : Flight)
+        +assign_passenger_to_flight(passenger : Passenger, flight : Flight)
+        +check_fuel(flight : Flight)
+        +calculate_profit(takeoff : Takeoff)
+        +show_takeoff_success()
+    }
+
+    class Passenger {
+        +id : String
+        +name : String
+        +document : String
+        +nationality : String
+        +calculate_baggage_weight()
+        +get_total_baggage_weight()
+        +assign_flight(flight : Flight)
+    }
+
+    class Baggage {
+        +id : String
+        +weight : double
+        +get_weight()
+    }
+
+    class Airline {
+        +code : String
+        +name : String
+        +calculate_extra_charge(extra_weight : double)
+    }
+
+    class Flight {
+        +flight_number : String
+        +origin : String
+        +destination : String
+        +date_time : DateTime
+        +available_seats : int
+        +has_available_seats()
+        +assign_passenger(passenger : Passenger)
+        +calculate_income()
+    }
+
+    class Airplane {
+        +registration : String
+        +seat_capacity : int
+        +available_seats : int
+        +fuel_capacity : double
+        +current_fuel : double
+        +fuel_consumption_per_hour : double
+        +has_available_seats()
+        +has_enough_fuel(hours : double)
+        +calculate_required_fuel(hours : double)
+    }
+
+    class Takeoff {
+        +id : String
+        +flight_hours : double
+        +income : double
+        +operational_costs : double
+        +profitability : double
+        +calculate_profitability()
+    }
+
+    class FlightStatus {
+        <<enumeration>>
+        SCHEDULED
+        APPROVED
+        DEPARTED
+        CANCELED
+    }
+
+    Airport "1" --> "0..*" Passenger : registers
+    Passenger "1" --> "0..*" Baggage : owns
+    Airport "1" --> "0..*" Flight : manages
+    Airport --> Airline : belongs_to
+    Flight --> Takeoff : generates
+    Airplane --> Takeoff : operates
+    Takeoff --> FlightStatus : status
+    Flight --> Passenger : assigns
+```
 
 
 ## Solución preliminar
