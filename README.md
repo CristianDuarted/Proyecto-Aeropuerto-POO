@@ -104,16 +104,152 @@ classDiagram
         CANCELED
     }
 
-    Airport "1" --> "0..*" Passenger : registers
-    Passenger "1" --> "0..*" Baggage : owns
-    Airport "1" --> "0..*" Flight : manages
-    Airport --> Airline : belongs_to
-    Flight --> Takeoff : generates
-    Airplane --> Takeoff : operates
-    Takeoff --> FlightStatus : status
-    Flight --> Passenger : assigns
+
 ```
 
+
+## Explicación de Objetos, Atributos y Métodos
+
+## Airport
+
+Clase principal encargada de administrar el sistema aeroportuario.
+
+### Atributos
+
+- `name` → Nombre del aeropuerto.
+- `baggage_limit` → Peso máximo permitido de equipaje.
+- `extra_baggage_fee` → Costo por exceso de equipaje.
+- `fuel_cost_per_liter` → Precio del combustible por litro.
+
+### Métodos
+
+- `register_passenger()` → Registra pasajeros en el sistema.
+- `validate_available_seats()` → Verifica disponibilidad de asientos.
+- `assign_passenger_to_flight()` → Asigna pasajeros a vuelos.
+- `check_fuel()` → Valida combustible suficiente.
+- `calculate_profit()` → Calcula rentabilidad del vuelo.
+- `show_takeoff_success()` → Muestra confirmación de despegue exitoso.
+
+---
+
+## Passenger
+
+Representa a un pasajero dentro del aeropuerto.
+
+### Atributos
+
+- `id` → Identificador del pasajero.
+- `name` → Nombre del pasajero.
+- `document` → Documento de identidad o pasaporte.
+- `nationality` → Nacionalidad del pasajero.
+
+### Métodos
+
+- `calculate_baggage_weight()` → Calcula peso del equipaje.
+- `get_total_baggage_weight()` → Obtiene peso total del equipaje.
+- `assign_flight()` → Asigna un vuelo al pasajero.
+
+---
+
+## Baggage
+
+Representa el equipaje del pasajero.
+
+### Atributos
+
+- `id` → Identificador del equipaje.
+- `weight` → Peso del equipaje.
+
+### Métodos
+
+- `get_weight()` → Devuelve el peso del equipaje.
+
+---
+
+## Airline
+
+Representa la aerolínea operadora.
+
+### Atributos
+
+- `code` → Código de la aerolínea.
+- `name` → Nombre de la aerolínea.
+
+### Métodos
+
+- `calculate_extra_charge()` → Calcula cobros por exceso de equipaje.
+
+---
+
+## Flight
+
+Representa un vuelo programado.
+
+### Atributos
+
+- `flight_number` → Número identificador del vuelo.
+- `origin` → Lugar de salida.
+- `destination` → Lugar de destino.
+- `date_time` → Fecha y hora del vuelo.
+- `available_seats` → Cantidad de asientos disponibles.
+
+### Métodos
+
+- `has_available_seats()` → Verifica disponibilidad de asientos.
+- `assign_passenger()` → Agrega pasajeros al vuelo.
+- `calculate_income()` → Calcula ingresos generados.
+
+---
+
+## Airplane
+
+Representa el avión utilizado en los vuelos.
+
+### Atributos
+
+- `registration` → Matrícula del avión.
+- `seat_capacity` → Capacidad máxima de pasajeros.
+- `available_seats` → Asientos libres.
+- `fuel_capacity` → Capacidad máxima de combustible.
+- `current_fuel` → Combustible disponible actualmente.
+- `fuel_consumption_per_hour` → Consumo de combustible por hora.
+
+### Métodos
+
+- `has_available_seats()` → Verifica asientos libres.
+- `has_enough_fuel()` → Comprueba combustible suficiente.
+- `calculate_required_fuel()` → Calcula combustible necesario.
+
+---
+
+## Takeoff
+
+Representa la operación de despegue.
+
+### Atributos
+
+- `id` → Identificador del despegue.
+- `flight_hours` → Duración estimada del vuelo.
+- `income` → Ingresos del vuelo.
+- `operational_costs` → Gastos operativos.
+- `profitability` → Ganancia obtenida.
+
+### Métodos
+
+- `calculate_profitability()` → Calcula la rentabilidad del vuelo.
+
+---
+
+## FlightStatus
+
+Enumeración que representa el estado del vuelo.
+
+### Valores
+
+- `SCHEDULED` → Vuelo programado.
+- `APPROVED` → Vuelo aprobado.
+- `DEPARTED` → Vuelo despegado.
+- `CANCELED` → Vuelo cancelado.
 
 ## Solución preliminar
 
