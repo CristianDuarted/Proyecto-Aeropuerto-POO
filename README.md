@@ -103,7 +103,14 @@ classDiagram
         DEPARTED
         CANCELED
     }
-
+    Airport "1" --> "0..*" Passenger : registers
+    Passenger "1" --> "0..*" Baggage : owns
+    Airport "1" --> "0..*" Flight : manages
+    Airport --> Airline : belongs_to
+    Flight --> Takeoff : generates
+    Airplane --> Takeoff : operates
+    Takeoff --> FlightStatus : status
+    Flight --> Passenger : assigns
 
 ```
 
