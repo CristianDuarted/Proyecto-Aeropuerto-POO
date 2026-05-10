@@ -33,7 +33,7 @@ Un aeropuerto internacional necesita un sistema para administrar el registro de 
 classDiagram
 
     class Airport {
-        +name : String
+        +name : str
         +baggage_limit : double
         +extra_baggage : double
         +fuel_cost_per_liter : double
@@ -46,31 +46,31 @@ classDiagram
     }
 
     class Passenger {
-        +id : String
-        +name : String
-        +document : String
-        +nationality : String
+        +id : str
+        +name : str
+        +document : str
+        +nationality : str
         +calculate_baggage_weight()
         +get_total_baggage_weight()
         +assign_flight(flight : Flight)
     }
 
     class Baggage {
-        +id : String
+        +id : str
         +weight : double
         +get_weight()
     }
 
     class Airline {
-        +code : String
-        +name : String
+        +code : str
+        +name : str
         +calculate_extra_charge(extra_weight : double)
     }
 
     class Flight {
         +flight_number : String
-        +origin : String
-        +destination : String
+        +origin : str
+        +destination : str
         +date_time : DateTime
         +available_seats : int
         +has_available_seats()
@@ -79,7 +79,7 @@ classDiagram
     }
 
     class Airplane {
-        +registration : String
+        +registration : str
         +seat_capacity : int
         +available_seats : int
         +fuel_capacity : double
@@ -91,7 +91,7 @@ classDiagram
     }
 
     class Takeoff {
-        +id : String
+        +id : str
         +flight_hours : double
         +income : double
         +operational_costs : double
