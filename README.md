@@ -114,6 +114,7 @@ classDiagram
     Flight *-- Takeoff
     Airplane --> Takeoff
     Takeoff --> FlightStatus
+´´´
 
 # Explicación de Objetos, Atributos y Métodos
 
