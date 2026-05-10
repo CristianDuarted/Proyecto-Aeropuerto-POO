@@ -685,8 +685,6 @@ Crew      : Laura Diaz, Sofia Ruiz
 
 # Solución preliminar
 
-# Solución preliminar
-
 ```text
 ==============================
       AIRPORT SYSTEM
