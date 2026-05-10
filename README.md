@@ -279,50 +279,40 @@ Enumeración que representa el estado del vuelo.
 ---
 
 # Solución preliminar
-# Solución preliminar
 
 ```text
 ==============================
-     AIRPORT MANAGEMENT
+        AIRPORT SYSTEM
 ==============================
 
 Passenger registered successfully
-Passenger : Andres Gomez
-Document  : CC 123456789
+
+Passenger : Andres Perez
+Document  : CC 123456
 
 Checking baggage weight...
 Total baggage weight : 32 kg
-Extra baggage detected
-Extra charge applied : $50
+Extra baggage charge : $40
 
 Checking available seats...
-Seats available : YES
-
-Passenger assigned to flight
-Flight number : AV204
-Origin        : Bogotá
-Destination   : Madrid
+Seat assigned : 14A
 
 Generating boarding pass...
 
 ==============================
-         BOARDING PASS
+        BOARDING PASS
 ==============================
-Passenger : Andres Gomez
-Flight    : AV204
-Seat      : 18A
-Gate      : B12
-Boarding  : 08:30 PM
-==============================
+
+Passenger : Andres Perez
+Flight    : AV203
+Origin    : Bogotá
+Destination : Madrid
+Seat      : 14A
 
 Checking airplane fuel...
-Required fuel : 12000 L
-Current fuel  : 15000 L
-Fuel status   : OK
+Fuel status : OK
 
 Calculating flight profitability...
-Flight income        : $250000
-Operational costs    : $65000
 Flight profitability : $185000
 
 FLIGHT DEPARTED SUCCESSFULLY
