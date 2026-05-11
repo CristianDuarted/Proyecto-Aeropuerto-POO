@@ -106,6 +106,14 @@ classDiagram
         CANCELED
     }
 
+    class BoardingPass {
+    +code : str
+    +seat_number : str
+    +boarding_time : str
+    +show_information()
+    }
+
+    Passenger --> BoardingPass
     Airport o-- Passenger
     Passenger *-- Baggage
     Airport o-- Flight
