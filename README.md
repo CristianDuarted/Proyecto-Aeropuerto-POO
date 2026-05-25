@@ -68,11 +68,13 @@ classDiagram
     }
 
     class Flight {
-        +flight_number : String
+        +flight_number : str
         +origin : str
         +destination : str
         +date_time : DateTime
         +available_seats : int
+        +airplane : Airplane
+        +airline : Airline
         +has_available_seats()
         +assign_passenger(passenger : Passenger)
         +calculate_income()
@@ -113,7 +115,9 @@ classDiagram
     +show_information()
     }
 
-    Passenger --> BoardingPass
+    Flight --> Airplane
+    Flight --> Airline
+    Passenger o-- BoardingPass
     Airport o-- Passenger
     Passenger *-- Baggage
     Airport o-- Flight
