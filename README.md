@@ -32,6 +32,7 @@ Este proyecto tiene como objetivo desarrollar un sistema de gestión aeroportuar
 Además, el programa permite representar la interacción entre distintas entidades del sistema, como pasajeros, vuelos, aerolíneas, aviones y pases de abordar, aplicando conceptos fundamentales de POO como clases, objetos, atributos, métodos, asociaciones y encapsulamiento.
 
 La finalidad principal es ofrecer una solución organizada y modular que automatice procesos básicos de un aeropuerto y facilite la administración eficiente de los vuelos y recursos disponibles.
+
 ---
 # Diagrama UML
 
