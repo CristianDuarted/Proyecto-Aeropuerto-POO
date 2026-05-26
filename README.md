@@ -228,6 +228,8 @@ Representa un vuelo programado.
 * `destination` → Lugar de destino.
 * `date_time` → Fecha y hora del vuelo.
 * `available_seats` → Cantidad de asientos disponibles.
+* `airplane` → Referencia al avión asignado.
+* `airline` → Referencia a la aerolínea operadora.
 
 ### Métodos
 
