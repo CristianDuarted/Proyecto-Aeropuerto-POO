@@ -31,18 +31,30 @@ Un aeropuerto internacional necesita un sistema para administrar el registro de 
 
 ```mermaid
 classDiagram
-
     class Airport {
         +name : str
-        +baggage_limit : double
-        +extra_baggage : double
-        +fuel_cost_per_liter : double
+        +baggage_limit : float
+        +extra_baggage : float
+        +fuel_cost_per_liter : float
         +register_passenger(passenger : Passenger)
         +validate_available_seats(flight : Flight)
         +assign_passenger_to_flight(passenger : Passenger, flight : Flight)
         +check_fuel(flight : Flight)
         +calculate_profit(takeoff : Takeoff)
         +show_takeoff_success()
+    }
+
+    class Flight {
+        +flight_number : str
+        +origin : str
+        +destination : str
+        +date_time : str
+        +available_seats : int
+        +airplane : Airplane
+        +airline : Airline
+        +has_available_seats()
+        +assign_passenger(passenger : Passenger)
+        +calculate_income()
     }
 
     class Passenger {
@@ -55,52 +67,46 @@ classDiagram
         +assign_flight(flight : Flight)
     }
 
-    class Baggage {
-        +id : str
-        +weight : double
-        +get_weight()
+    class Airplane {
+        +registration : str
+        +seat_capacity : int
+        +available_seats : int
+        +fuel_capacity : float
+        +current_fuel : float
+        +fuel_consumption_per_hour : float
+        +has_available_seats()
+        +has_enough_fuel(hours : float)
+        +calculate_required_fuel(hours : float)
     }
 
     class Airline {
         +code : str
         +name : str
-        +calculate_extra_charge(extra_weight : double)
-    }
-
-    class Flight {
-        +flight_number : str
-        +origin : str
-        +destination : str
-        +date_time : DateTime
-        +available_seats : int
-        +airplane : Airplane
-        +airline : Airline
-        +has_available_seats()
-        +assign_passenger(passenger : Passenger)
-        +calculate_income()
-    }
-
-    class Airplane {
-        +registration : str
-        +seat_capacity : int
-        +available_seats : int
-        +fuel_capacity : double
-        +current_fuel : double
-        +fuel_consumption_per_hour : double
-        +has_available_seats()
-        +has_enough_fuel(hours : double)
-        +calculate_required_fuel(hours : double)
+        +calculate_extra_charge(extra_weight : float)
     }
 
     class Takeoff {
         +id : str
-        +flight_hours : double
-        +income : double
-        +operational_costs : double
-        +profitability : double
+        +flight_hours : float
+        +income : float
+        +operational_costs : float
+        +profitability : float
         +calculate_profitability()
     }
 
+    class Baggage {
+        +id : str
+        +weight : float
+        +get_weight()
+    }
+
+    class BoardingPass {
+        +code : str
+        +seat_number : str
+        +boarding_time : str
+        +show_information()
+    }
+    
     class FlightStatus {
         SCHEDULED
         APPROVED
@@ -108,22 +114,15 @@ classDiagram
         CANCELED
     }
 
-    class BoardingPass {
-    +code : str
-    +seat_number : str
-    +boarding_time : str
-    +show_information()
-    }
-
+    Airport o-- Flight
+    Airport o-- Passenger
+    Airport --> Airline
     Flight --> Airplane
     Flight --> Airline
-    Passenger o-- BoardingPass
-    Airport o-- Passenger
-    Passenger *-- Baggage
-    Airport o-- Flight
-    Airport --> Airline
     Flight --> Passenger
     Flight *-- Takeoff
+    Passenger *-- Baggage
+    Passenger o-- BoardingPass
     Airplane --> Takeoff
     Takeoff --> FlightStatus
 ```
