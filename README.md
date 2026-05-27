@@ -128,7 +128,7 @@ classDiagram
     Flight --> Airline
     Flight --> Passenger
     Flight *-- Takeoff
-    Passenger *-- Baggage
+    Passenger o-- Baggage
     Passenger o-- BoardingPass
     Airplane --> Takeoff
     Takeoff --> FlightStatus
