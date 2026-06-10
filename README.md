@@ -25,7 +25,14 @@ Un aeropuerto internacional necesita un sistema para administrar el registro de 
 5. Si el vuelo es aprobado para despegar, se debe mostrar en pantalla que fue un éxito.
 
 ---
+# Objetivo del proyecto
+Este proyecto tiene como objetivo desarrollar un sistema de gestión aeroportuaria utilizando programación orientada a objetos (POO). El sistema busca simular y administrar diferentes procesos relacionados con el funcionamiento de un aeropuerto, incluyendo el registro de pasajeros, el control de equipaje, la asignación de asientos, la validación de combustible y el cálculo de rentabilidad de los vuelos.
 
+Además, el programa permite representar la interacción entre distintas entidades del sistema, como pasajeros, vuelos, aerolíneas, aviones y pases de abordar, aplicando conceptos fundamentales de POO como clases, objetos, atributos, métodos, asociaciones y encapsulamiento.
+
+La finalidad principal es ofrecer una solución organizada y modular que automatice procesos básicos de un aeropuerto y facilite la administración eficiente de los vuelos y recursos disponibles.
+
+---
 # Diagrama UML
 
 ```mermaid
@@ -120,7 +127,7 @@ classDiagram
     Flight --> Airline
     Flight --> Passenger
     Flight *-- Takeoff
-    Passenger *-- Baggage
+    Passenger o-- Baggage
     Passenger o-- BoardingPass
     Airplane --> Takeoff
     Takeoff --> FlightStatus
