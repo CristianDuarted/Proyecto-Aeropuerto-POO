@@ -1,4 +1,4 @@
-# ProyectoPOO
+[![.github/workflows/ci.yml](https://github.com/dabarretor/Proyecto-Aeropuerto-POO/actions/workflows/ci.yml/badge.svg)](https://github.com/dabarretor/Proyecto-Aeropuerto-POO/actions/workflows/ci.yml)
 
 # Proyecto de programación orientada a objetos
 
