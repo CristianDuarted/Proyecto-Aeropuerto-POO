@@ -402,10 +402,11 @@ class SistemaAeropuerto:
 
             else:
                 # Agrega el pasajero a la lista de rechazados junto con los motivos del rechazo
-                self.rechazados.append((pasajero, "\n-".join(motivo)))
+                motivos_formateados = "\n-".join(motivo)
+                self.rechazados.append((pasajero, motivos_formateados))
 
                 print("\n PASAJERO RECHAZADO")
-                print("Motivos de rechazo:", motivo)
+                print("Motivos de rechazo:", motivos_formateados)
 
     def mostrar_reporte(self) -> None:
 
