@@ -190,7 +190,6 @@ class SistemaAeropuerto:
         self.validador = ValidadorPasajero()
 
     def registrar_pasajero(self) -> None:
-
         cantidad = self.consola.leer_entero("¿Cuántos pasajeros desea registrar?: ")
         # Sirve para registrar la información de los pasajeros, dependiendo de la cantidad que el usuario ingrese
         # Se ejecutará un ciclo que solicitará los datos de cada pasajero.
@@ -202,10 +201,10 @@ class SistemaAeropuerto:
             print("=" * 60)
 
             # Validar nombre (solo letras, espacios, apóstrofes y guiones)
-            Nombre_regla = r"^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s'-]+$"
+            nombre_regla = r"^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s'-]+$"
             nombre = self.consola.leer_texto("Nombre: ")
             while True:
-                if re.match(Nombre_regla, nombre.strip()):
+                if re.match(nombre_regla, nombre.strip()):
                     break
                 else:
                     print(
@@ -230,10 +229,10 @@ class SistemaAeropuerto:
                     nacionalidad = self.consola.leer_texto("Nacionalidad: ")
 
             # Validar tipo de sangre (solo opciones válidas)
-            Tipo_sangre_regla = ["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"]
+            tipo_sangre_regla = ["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"]
             tipo_sangre = self.consola.leer_texto("Tipo de sangre: ")
             while True:
-                if tipo_sangre in Tipo_sangre_regla:
+                if tipo_sangre in tipo_sangre_regla:
                     break
                 else:
                     print("Error, ingresa el tipo de sangre correcto, por favor")
@@ -330,7 +329,11 @@ class SistemaAeropuerto:
 
             print("\nEQUIPAJE")
 
-            cantidad_maletas = self.consola.leer_entero("Cantidad de maletas: ")
+            while True:
+                cantidad_maletas = self.consola.leer_entero("Cantidad de maletas: ")
+                if cantidad_maletas >= 0:
+                    break
+                print("Error, la cantidad de maletas no puede ser negativa.")
 
             peso_total = 0.0
             largo = 0.0
@@ -360,9 +363,9 @@ class SistemaAeropuerto:
 
             objetos_no_permitidos = leer_objetos_no_permitidos()
 
-            """Este bloque de código crea instancias de las clases Pasajero, Documento y Equipaje utilizando los datos ingresados por el usuario.
-            Luego, se llama al método validar_pasajero del validador para verificar si el pasajero cumple con los requisitos necesarios.
-            Dependiendo del resultado de la validación, se agrega el pasajero a la lista de aprobados o rechazados, y se muestra un mensaje correspondiente en la consola."""
+            # Este bloque de código crea instancias de las clases Pasajero, Documento y Equipaje utilizando los datos ingresados por el usuario.
+            # Luego, se llama al método validar_pasajero del validador para verificar si el pasajero cumple con los requisitos necesarios.
+            # Dependiendo del resultado de la validación, se agrega el pasajero a la lista de aprobados o rechazados, y se muestra un mensaje correspondiente en la consola.
 
             pasajero = Pasajero(
                 nombre, edad, nacionalidad, tipo_sangre, telefono, correo, destino
@@ -402,7 +405,7 @@ class SistemaAeropuerto:
 
             else:
                 # Agrega el pasajero a la lista de rechazados junto con los motivos del rechazo
-                motivos_formateados = "\n-".join(motivo)
+                motivos_formateados = "- " + "\n- ".join(motivo)
                 self.rechazados.append((pasajero, motivos_formateados))
 
                 print("\n PASAJERO RECHAZADO")
