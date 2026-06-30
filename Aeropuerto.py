@@ -427,7 +427,9 @@ class SistemaAeropuerto:
             print("\n PASAJEROS RECHAZADOS")
             # Muestra la lista de pasajeros rechazados junto con el motivo del rechazo.
             for indice, (pasajero, motivos) in enumerate(self.rechazados, start=1):
-                print(f"""{indice}. {pasajero.nombre} - {pasajero.destino} \n Motivos: {motivos}""")
+                print(
+                    f"""{indice}. {pasajero.nombre} - {pasajero.destino} \n Motivos: {motivos}"""
+                )
 
 
 def main():
