@@ -108,43 +108,54 @@ class Equipaje:
 class ValidadorPasajero:
     def validar_pasajero(
         self, pasajero: Pasajero, documento: Documento, equipaje: Equipaje
-    ) -> tuple[bool, str]:
+    ) -> tuple[bool, list[str]]:
+
+        motivos_rechazo = []
+        motivos_aprobado = []
 
         if pasajero.edad < 18:
-            return False, "Menor de edad"
+            motivos_rechazo.append("Menor de edad")
 
         if not documento.pasaporte_vigente:
-            return False, "Pasaporte vencido"
+            motivos_rechazo.append("Pasaporte vencido")
 
         paises_con_visa = ["canada", "estados unidos", "australia", "reino unido"]
 
         if pasajero.destino.lower() in paises_con_visa:
             if not documento.tiene_visa:
-                return False, "El destino requiere visa"
+                motivos_rechazo.append("El destino requiere visa")
 
             if not documento.visa_vigente:
-                return False, "Visa vencida"
+                motivos_rechazo.append("Visa vencida")
 
         if not documento.check_in_realizado:
-            return False, "No realizó check-in"
+            motivos_rechazo.append("No realizó check-in")
 
         if not documento.boleto_valido:
-            return False, "Boleto inválido"
+            motivos_rechazo.append("Boleto inválido")
 
         if equipaje.armas:
-            return False, "Transporta armas"
+            motivos_rechazo.append("Transporta armas")
 
         if equipaje.material_inflamable:
-            return False, "Material inflamable"
+            motivos_rechazo.append("Material inflamable")
 
         if equipaje.elementos_peligrosos:
-            return False, "Elementos peligrosos"
+            motivos_rechazo.append("Elementos peligrosos")
 
         self.validar_equipaje(equipaje)
 
-        return True, "Aprobado"
+        motivos_aprobado.append("Aprobado")
+
+        if motivos_rechazo:
+            return False, motivos_rechazo
+
+        return True, motivos_aprobado
 
     def validar_equipaje(self, equipaje: Equipaje) -> None:
+
+        if equipaje.cantidad_maletas < 1:
+            return
 
         if equipaje.cantidad_maletas > 3.0:
             exceso = equipaje.cantidad_maletas - 3.0
@@ -321,23 +332,33 @@ class SistemaAeropuerto:
 
             cantidad_maletas = self.consola.leer_entero("Cantidad de maletas: ")
 
-            peso_total = self.consola.leer_decimal("Peso total (kg): ")
+            peso_total = 0.0
+            largo = 0.0
+            ancho = 0.0
+            alto = 0.0
 
-            largo = self.consola.leer_decimal("Largo (cm): ")
-
-            ancho = self.consola.leer_decimal("Ancho (cm): ")
-
-            alto = self.consola.leer_decimal("Alto (cm): ")
-
-            elementos_peligrosos = self.consola.leer_booleano(
-                "¿Elementos peligrosos? (s/n): "
+            preguntas_objetos_no_permitidos = (
+                ("elementos_peligrosos", "¿Elementos peligrosos? (s/n): "),
+                ("material_inflamable", "¿Material inflamable? (s/n): "),
+                ("armas", "¿Armas? (s/n): "),
             )
 
-            material_inflamable = self.consola.leer_booleano(
-                "¿Material inflamable? (s/n): "
-            )
+            def leer_objetos_no_permitidos() -> dict:
+                return {
+                    clave: self.consola.leer_booleano(pregunta)
+                    for clave, pregunta in preguntas_objetos_no_permitidos
+                }
 
-            armas = self.consola.leer_booleano("¿Armas? (s/n): ")
+            if cantidad_maletas > 0:
+                peso_total = self.consola.leer_decimal("Peso total (kg): ")
+
+                largo = self.consola.leer_decimal("Largo (cm): ")
+
+                ancho = self.consola.leer_decimal("Ancho (cm): ")
+
+                alto = self.consola.leer_decimal("Alto (cm): ")
+
+            objetos_no_permitidos = leer_objetos_no_permitidos()
 
             """Este bloque de código crea instancias de las clases Pasajero, Documento y Equipaje utilizando los datos ingresados por el usuario.
             Luego, se llama al método validar_pasajero del validador para verificar si el pasajero cumple con los requisitos necesarios.
@@ -362,9 +383,7 @@ class SistemaAeropuerto:
                 largo,
                 ancho,
                 alto,
-                elementos_peligrosos,
-                material_inflamable,
-                armas,
+                **objetos_no_permitidos,
             )
 
             aprobado, motivo = self.validador.validar_pasajero(
@@ -382,11 +401,11 @@ class SistemaAeropuerto:
                     print(f"Cargo adicional: ${equipaje.cargo_adicional:,.0f}")
 
             else:
-                # Agrega el pasajero a la lista de rechazados junto con el motivo del rechazo
-                self.rechazados.append((pasajero, motivo))
+                # Agrega el pasajero a la lista de rechazados junto con los motivos del rechazo
+                self.rechazados.append((pasajero, "\n-".join(motivo)))
 
                 print("\n PASAJERO RECHAZADO")
-                print("Motivo:", motivo)
+                print("Motivos de rechazo:", motivo)
 
     def mostrar_reporte(self) -> None:
 
@@ -394,7 +413,7 @@ class SistemaAeropuerto:
         print("REPORTE FINAL")
         print("=" * 60)
 
-        if not self.rechazados:
+        if self.aprobados:
             print("\nPASAJEROS APROBADOS")
             # Muestra la lista de pasajeros aprobados junto con el cargo adicional por equipaje, si corresponde.
             for indice, dato in enumerate(self.aprobados, start=1):
@@ -402,19 +421,13 @@ class SistemaAeropuerto:
                 equipaje = dato[1]
 
                 print(
-                    f"""{indice}. "
-                    {pasajero.nombre} "
-                    - {pasajero.destino}"
-                    Cargo: "
-                    ${equipaje.cargo_adicional:,.0f}"""
+                    f"""{indice}. {pasajero.nombre} - {pasajero.destino} | Cargo: $ {equipaje.cargo_adicional:,.0f}"""
                 )
         if self.rechazados:
             print("\n PASAJEROS RECHAZADOS")
             # Muestra la lista de pasajeros rechazados junto con el motivo del rechazo.
-            for indice, (pasajero, motivo) in enumerate(self.rechazados, start=1):
-                print(f"""{indice}.
-                       {pasajero.nombre}
-                             Motivo: {motivo}""")
+            for indice, (pasajero, motivos) in enumerate(self.rechazados, start=1):
+                print(f"""{indice}. {pasajero.nombre} - {pasajero.destino} \n Motivos: {motivos}""")
 
 
 def main():
