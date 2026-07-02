@@ -89,6 +89,7 @@ class Equipaje:
         elementos_peligrosos: bool,
         material_inflamable: bool,
         armas: bool,
+        maletas: list = None,
     ) -> None:
 
         self.cantidad_maletas = cantidad_maletas
@@ -99,7 +100,7 @@ class Equipaje:
         self.elementos_peligrosos = elementos_peligrosos
         self.material_inflamable = material_inflamable
         self.armas = armas
-
+        self.maletas = maletas if maletas is not None else []
         self.cargo_adicional = 0.0
         self.en_bodega = False
 
@@ -154,26 +155,27 @@ class ValidadorPasajero:
         return True, motivos_aprobado
 
     def validar_equipaje(self, equipaje: Equipaje) -> None:
-
+ 
         if equipaje.cantidad_maletas < 1:
             return
-
-        if equipaje.cantidad_maletas > 3.0:
-            exceso = equipaje.cantidad_maletas - 3.0
-
+ 
+        if equipaje.cantidad_maletas > 3:
+            exceso = equipaje.cantidad_maletas - 3
             equipaje.cargo_adicional += exceso * 50000.0
             equipaje.en_bodega = True
-
+ 
         if equipaje.peso_total > 23.0:
             exceso = equipaje.peso_total - 23.0
-
             equipaje.cargo_adicional += exceso * 10000.0
             equipaje.en_bodega = True
-
-        if equipaje.largo > 55 or equipaje.ancho > 40 or equipaje.alto > 25:
-            equipaje.cargo_adicional += 50000.0
-            equipaje.en_bodega = True
-
+ 
+        # Evalua las dimensiones de CADA maleta individualmente
+        for i, maleta in enumerate(equipaje.maletas, 1):
+            if maleta["largo"] > 55 or maleta["ancho"] > 40 or maleta["alto"] > 25:
+                equipaje.cargo_adicional += 50000.0
+                equipaje.en_bodega = True
+                print(f"  Maleta {i}: dimensiones exceden el limite, cargo adicional $50.000")
+                
 
 # Esta clase representa el sistema de control de pasajeros en un aeropuerto. Permite registrar pasajeros, validar sus documentos y equipaje.
 # Generando un reporte final indicando los pasajeros aprobados y rechazados.
@@ -354,14 +356,21 @@ class SistemaAeropuerto:
                 }
 
             if cantidad_maletas > 0:
-                peso_total = self.consola.leer_decimal("Peso total (kg): ")
-
-                largo = self.consola.leer_decimal("Largo (cm): ")
-
-                ancho = self.consola.leer_decimal("Ancho (cm): ")
-
-                alto = self.consola.leer_decimal("Alto (cm): ")
-
+                peso_total = 0.0
+                largo = 0.0
+                ancho = 0.0
+                alto = 0.0
+                maletas = []
+ 
+                for i in range(1, cantidad_maletas + 1):
+                    print(f"\n  Maleta {i} de {cantidad_maletas}:")
+                    peso = self.consola.leer_decimal("  Peso (kg): ")
+                    l = self.consola.leer_decimal("  Largo (cm): ")
+                    a = self.consola.leer_decimal("  Ancho (cm): ")
+                    al = self.consola.leer_decimal("  Alto (cm): ")
+                    peso_total += peso
+                    maletas.append({"largo": l, "ancho": a, "alto": al, "peso": peso})
+ 
             objetos_no_permitidos = leer_objetos_no_permitidos()
 
             # Este bloque de código crea instancias de las clases Pasajero, Documento y Equipaje utilizando los datos ingresados por el usuario.
@@ -388,6 +397,7 @@ class SistemaAeropuerto:
                 ancho,
                 alto,
                 **objetos_no_permitidos,
+                maletas=maletas if cantidad_maletas > 0 else [],
             )
 
             aprobado, motivo = self.validador.validar_pasajero(
