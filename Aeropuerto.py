@@ -394,8 +394,13 @@ class SistemaConsultas:
         # Mayor cargo
         mayor = max(self.aprobados, key=lambda x: x[1].cargo_adicional, default=None)
 
-        # Motivos de rechazo
-        motivos = Counter(m for _, m in self.rechazados)
+        # Motivos de rechazo (contar cada motivo individual)
+        motivos: Counter[str] = Counter()
+        for _, m in self.rechazados:
+            for linea in m.splitlines():
+                linea = linea.strip()
+                if linea.startswith("- "):
+                    motivos[linea[2:]] += 1
 
         print("\n" + "═" * 45)
         print("  ESTADÍSTICAS")
