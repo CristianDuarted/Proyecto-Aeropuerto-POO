@@ -502,19 +502,19 @@ class SistemaConsultas:
 class SistemaAeropuerto:
     # ──────Validación de datos de entrada del usuario────────────────────────
     # Validar nombre (solo letras, espacios, apóstrofes y guiones)
-    nombre_regla = r"^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s'-]+$"
+    NOMBRE_REGLA = r"^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s'-]+$"
 
     # Validar nacionalidad y destino (solo letras y espacios)
-    texto_regla = r"^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+$"
+    TEXTO_REGLA = r"^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+$"
 
     # Validar tipo de sangre (solo opciones válidas)
-    tipo_sangre_regla = ["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"]
+    TIPO_SANGRE_REGLA = ["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"]
 
     # Validar teléfono (solo números y espacios, puede iniciar con +)
-    telefono_regla = r"^\+?[0-9\s]+$"
+    TELEFONO_REGLA = r"^\+?[0-9\s]+$"
 
     # Validar correo (solo direcciones de correo válidas)
-    correo_regla = [
+    CORREO_REGLA = [
         "unal.edu.co",
         "gmail.com",
         "hotmail.com",
@@ -525,7 +525,7 @@ class SistemaAeropuerto:
     ]
 
     # Validar pasaporte (solo letras y números)
-    pasaporte_reglas = r"^[a-zA-Z0-9]+$"
+    PASAPORTE_REGLA = r"^[a-zA-Z0-9]+$"
 
     def __init__(self) -> None:
 
@@ -550,18 +550,18 @@ class SistemaAeropuerto:
             )
             print("=" * 60)
 
-            nombre = self.consola.validacion("Nombre: ", self.nombre_regla)
+            nombre = self.consola.validacion("Nombre: ", self.NOMBRE_REGLA)
             while True:
                 edad = self.consola.leer_entero("Edad: ")
                 if edad >= 0:
                     break
                 print("Error, la edad no puede ser negativa.")
 
-            nacionalidad = self.consola.validacion("Nacionalidad: ", self.texto_regla)
+            nacionalidad = self.consola.validacion("Nacionalidad: ", self.TEXTO_REGLA)
             tipo_sangre = self.consola.validacion(
-                "Tipo de sangre: ", self.tipo_sangre_regla
+                "Tipo de sangre: ", self.TIPO_SANGRE_REGLA
             )
-            telefono = self.consola.validacion("Teléfono: ", self.telefono_regla)
+            telefono = self.consola.validacion("Teléfono: ", self.TELEFONO_REGLA)
 
             correo = self.consola.leer_texto("Correo: ")
             # Verifica si el correo ingresado cumple con las condiciones de validación.
@@ -592,19 +592,19 @@ class SistemaAeropuerto:
                     continue
 
                 # No cumple si el dominio no está en la lista de dominios permitidos.
-                if dominio not in self.correo_regla:
+                if dominio not in self.CORREO_REGLA:
                     print("Error, digite correctamente su correo, por favor")
                     correo = self.consola.leer_texto("Correo: ")
                 else:
                     correo = correo_limpio
                     break
 
-            destino = self.consola.validacion("Destino: ", self.texto_regla)
+            destino = self.consola.validacion("Destino: ", self.TEXTO_REGLA)
 
             print("\nDOCUMENTOS")
 
             numero_pasaporte = self.consola.validacion(
-                "Pasaporte: ", self.pasaporte_reglas
+                "Pasaporte: ", self.PASAPORTE_REGLA
             )
             pasaporte_vigente = self.consola.leer_booleano(
                 "¿Pasaporte vigente? (s/n): "
