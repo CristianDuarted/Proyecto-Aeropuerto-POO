@@ -484,7 +484,8 @@ class SistemaConsultas:
         lineas += ["", "─" * 60, "PASAJEROS RECHAZADOS", "─" * 60]
 
         for i, (p, m) in enumerate(self.rechazados, 1):
-            lineas.append(f"{i:>3}. {p.nombre:<25}  \n motivo: {m}")
+            lineas.append(f"{i:>3}. {p.nombre:<25}")
+            lineas.append(f" motivo: {m}")
 
         lineas += ["", "=" * 60]
 
