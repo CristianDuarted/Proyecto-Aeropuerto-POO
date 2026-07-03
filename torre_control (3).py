@@ -1,6 +1,6 @@
 from collections import Counter
 
-from aeropuerto_v21 import SistemaAeropuerto, SistemaConsultas
+from Aeropuerto import SistemaAeropuerto, SistemaConsultas
 
 
 class Piloto:
