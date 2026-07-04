@@ -2,14 +2,16 @@
 Permite registrar información de pasajeros, validar sus documentos y equipaje
 y generar un reporte final indicando los pasajeros aprobados y rechazados."""
 
+from collections import Counter
 import re  # Sirve para validar los datos de entrada del usuario, como nombres, correos electrónicos y números de teléfono.
 from collections import Counter
 
 
+# ── Utilidades de consola ──────────────────────────────────────
 # Se usa para leer datos de entrada del usuario desde la consola y para mostrar mensajes de salida en la consola.
 class Consola:
     def leer_texto(self, mensaje: str) -> str:
-        return input(mensaje)
+        return input(mensaje).strip()
 
     def leer_entero(self, mensaje: str) -> int:
         while True:
@@ -17,7 +19,7 @@ class Consola:
                 valor = int(input(mensaje))
                 return valor
             except ValueError:
-                print("Error, ingresa el digito en entero por favor")
+                print("Error, ingresa un número entero válido, por favor")
 
     def leer_decimal(self, mensaje: str) -> float:
         while True:
@@ -25,16 +27,37 @@ class Consola:
                 valor = float(input(mensaje))
                 return valor
             except ValueError:
-                print("Error, ingresa el digito en entero o decimal por favor")
+                print("Error, ingresa un número decimal válido, por favor")
 
     def leer_booleano(self, mensaje: str) -> bool:
         while True:
             respuesta = input(mensaje).strip().lower()
             if respuesta in ["s", "n"]:
                 return respuesta == "s"
-            print("Error, ingresa solo s o n por favor")
+            print("Error, ingresa solo s o n, por favor")
+
+    def validacion(self, mensaje: str, patron: str | list[str]) -> str:
+        # Permite eliminar espacios en blanco al inicio y al final de la cadena antes de realizar la validación.
+        # Luego, se utiliza re.match() para verificar si cumple con la expresión regular definida en patron.
+        while True:
+            respuesta = self.leer_texto(mensaje)
+            if isinstance(patron, str):
+                if re.match(patron, respuesta):
+                    return respuesta
+            if isinstance(patron, list):
+                if respuesta.upper() in patron:
+                    return respuesta.upper()
+            print("Error, ingresa el dato correctamente, por favor")
+
+    def leer_decimal_positivo(self, mensaje: str) -> float:
+        while True:
+            valor = self.leer_decimal(mensaje)
+            if valor > 0:
+                return valor
+            print("Error, ingresa el dato correctamente, por favor")
 
 
+# ── Modelos de datos ───────────────────────────────────────────
 # Esta clase representa a un pasajero y almacena su información personal, como nombre, edad, nacionalidad, tipo de sangre, teléfono, correo electrónico y destino.
 class Pasajero:
     def __init__(
@@ -105,9 +128,12 @@ class Equipaje:
         self.en_bodega = False
 
 
+# ── Validación ─────────────────────────────────────────────────
 # Esta clase se encarga de validar la información de un pasajero, sus documentos y su equipaje.
 # Si el pasajero es aprobado, también calcula los cargos adicionales por exceso de equipaje o dimensiones fuera de los límites permitidos.
 class ValidadorPasajero:
+    PAISES_CON_VISA = ["canada", "estados unidos", "australia", "reino unido"]
+
     def validar_pasajero(
         self, pasajero: Pasajero, documento: Documento, equipaje: Equipaje
     ) -> tuple[bool, list[str]]:
@@ -121,9 +147,7 @@ class ValidadorPasajero:
         if not documento.pasaporte_vigente:
             motivos_rechazo.append("Pasaporte vencido")
 
-        paises_con_visa = ["canada", "estados unidos", "australia", "reino unido"]
-
-        if pasajero.destino.lower() in paises_con_visa:
+        if pasajero.destino.lower() in self.PAISES_CON_VISA:
             if not documento.tiene_visa:
                 motivos_rechazo.append("El destino requiere visa")
 
@@ -180,6 +204,33 @@ class ValidadorPasajero:
 # Esta clase representa el sistema de control de pasajeros en un aeropuerto. Permite registrar pasajeros, validar sus documentos y equipaje.
 # Generando un reporte final indicando los pasajeros aprobados y rechazados.
 class SistemaAeropuerto:
+    # ──────Validación de datos de entrada del usuario────────────────────────
+    # Validar nombre (solo letras, espacios, apóstrofes y guiones)
+    NOMBRE_REGLA = r"^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s'-]+$"
+
+    # Validar nacionalidad y destino (solo letras y espacios)
+    TEXTO_REGLA = r"^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+$"
+
+    # Validar tipo de sangre (solo opciones válidas)
+    TIPO_SANGRE_REGLA = ["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"]
+
+    # Validar teléfono (solo números y espacios, puede iniciar con +)
+    TELEFONO_REGLA = r"^\+?[0-9\s]+$"
+
+    # Validar correo (solo direcciones de correo válidas)
+    CORREO_REGLA = [
+        "unal.edu.co",
+        "gmail.com",
+        "hotmail.com",
+        "icloud.com",
+        "outlook.com",
+        "yahoo.com",
+        "protonmail.com",
+    ]
+
+    # Validar pasaporte (solo letras y números)
+    PASAPORTE_REGLA = r"^[a-zA-Z0-9]+$"
+
     def __init__(self) -> None:
 
         self.aprobados: list[
@@ -203,70 +254,25 @@ class SistemaAeropuerto:
             )
             print("=" * 60)
 
-            # Validar nombre (solo letras, espacios, apóstrofes y guiones)
-            nombre_regla = r"^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s'-]+$"
-            nombre = self.consola.leer_texto("Nombre: ")
+            nombre = self.consola.validacion("Nombre: ", self.NOMBRE_REGLA)
             while True:
-                if re.match(nombre_regla, nombre.strip()):
+                edad = self.consola.leer_entero("Edad: ")
+                if edad >= 0:
                     break
-                else:
-                    print(
-                        "Error, ingresa solo letras (con espacios si llega ser el caso), por favor"
-                    )
-                    nombre = self.consola.leer_texto("Nombre: ")
+                print("Error, la edad no puede ser negativa.")
 
-            edad = self.consola.leer_entero("Edad: ")
-
-            # Validar nacionalidad (solo letras y espacios)
-            reglas = r"^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+$"
-            nacionalidad = self.consola.leer_texto("Nacionalidad: ")
-            while True:
-                # Permite eliminar espacios en blanco al inicio y al final de la cadena antes de realizar la validación.
-                # Luego, se utiliza re.match() para verificar si la nacionalidad ingresada cumple con la expresión regular definida en reglas.
-                if re.match(reglas, nacionalidad.strip()):
-                    break
-                else:
-                    print(
-                        "Error, ingresa solo letras (con espacios si llega ser el caso), por favor"
-                    )
-                    nacionalidad = self.consola.leer_texto("Nacionalidad: ")
-
-            # Validar tipo de sangre (solo opciones válidas)
-            tipo_sangre_regla = ["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"]
-            tipo_sangre = self.consola.leer_texto("Tipo de sangre: ")
-            while True:
-                if tipo_sangre in tipo_sangre_regla:
-                    break
-                else:
-                    print("Error, ingresa el tipo de sangre correcto, por favor")
-                    tipo_sangre = self.consola.leer_texto("Tipo de sangre: ")
-
-            # Validar teléfono (solo números y espacios, puede iniciar con +)
-            telefono_regla = r"^\+?[0-9\s]+$"
-            telefono = self.consola.leer_texto("Teléfono: ")
-            while True:
-                # Permite eliminar espacios en blanco al inicio y al final de la cadena antes de realizar la validación.
-                # Luego, se utiliza re.match() para verificar si el teléfono ingresado cumple con la expresión regular definida en telefono_regla.
-                if re.match(telefono_regla, telefono.strip()):
-                    break
-                else:
-                    print("Error, ingresa nuevamente su número de teléfono, por favor")
-                    telefono = self.consola.leer_texto("Teléfono: ")
+            nacionalidad = self.consola.validacion("Nacionalidad: ", self.TEXTO_REGLA)
+            tipo_sangre = self.consola.validacion(
+                "Tipo de sangre: ", self.TIPO_SANGRE_REGLA
+            )
+            telefono = self.consola.validacion("Teléfono: ", self.TELEFONO_REGLA)
 
             correo = self.consola.leer_texto("Correo: ")
-            # Validar correo (solo direcciones de correo válidas)
-            correo_regla = [
-                "unal.edu.co",
-                "gmail.com",
-                "hotmail.com",
-                "icloud.com",
-                "outlook.com",
-                "yahoo.com",
-                "protonmail.com",
-            ]
             # Verifica si el correo ingresado cumple con las condiciones de validación.
             while True:
-                correo_limpio = correo.strip()  # Se eliminan los espacios en blanco al inicio y al final del correo ingresado.
+                # Se eliminan los espacios en blanco al inicio y al final del correo ingresado
+                # Se pasa todo a minuscula usando lower()
+                correo_limpio = correo.strip().lower()
                 count_arroba = correo_limpio.count(
                     "@"
                 )  # Se cuenta la cantidad de veces que aparece el símbolo "@" en el correo ingresado por el usuario.
@@ -288,46 +294,30 @@ class SistemaAeropuerto:
                     print("Error, digite correctamente su correo, por favor")
                     correo = self.consola.leer_texto("Correo: ")
                     continue
+
                 # No cumple si el dominio no está en la lista de dominios permitidos.
-                if dominio not in correo_regla:
+                if dominio not in self.CORREO_REGLA:
                     print("Error, digite correctamente su correo, por favor")
                     correo = self.consola.leer_texto("Correo: ")
                 else:
                     correo = correo_limpio
                     break
 
-            destino = self.consola.leer_texto("Destino: ")
-            while True:
-                if re.match(reglas, destino.strip()):
-                    break
-                print(
-                    "Error, ingresa solo letras (con espacios si llega ser el caso), por favor"
-                )
-                destino = self.consola.leer_texto("Destino: ")
+            destino = self.consola.validacion("Destino: ", self.TEXTO_REGLA)
 
             print("\nDOCUMENTOS")
-            # Validar pasaporte (solo letras y números)
-            pasaporte_reglas = r"^[a-zA-Z0-9]+$"
-            numero_pasaporte = self.consola.leer_texto("Pasaporte: ")
-            while True:
-                if re.match(pasaporte_reglas, numero_pasaporte.strip()):
-                    break
-                else:
-                    print("Error, Solo se acepta letras/numeros, por favor")
-                    numero_pasaporte = self.consola.leer_texto("Pasaporte: ")
 
+            numero_pasaporte = self.consola.validacion(
+                "Pasaporte: ", self.PASAPORTE_REGLA
+            )
             pasaporte_vigente = self.consola.leer_booleano(
                 "¿Pasaporte vigente? (s/n): "
             )
-
             tiene_visa = self.consola.leer_booleano("¿Tiene visa? (s/n): ")
-
             visa_vigente = self.consola.leer_booleano("¿Visa vigente? (s/n): ")
-
             check_in_realizado = self.consola.leer_booleano(
                 "¿Check-in realizado? (s/n): "
             )
-
             boleto_valido = self.consola.leer_booleano("¿Boleto válido? (s/n): ")
 
             print("\nEQUIPAJE")
@@ -416,7 +406,7 @@ class SistemaAeropuerto:
 
             else:
                 # Agrega el pasajero a la lista de rechazados junto con los motivos del rechazo
-                motivos_formateados = "- " + "\n- ".join(motivo)
+                motivos_formateados = "\n- " + "\n- ".join(motivo)
                 self.rechazados.append((pasajero, motivos_formateados))
 
                 print("\n PASAJERO RECHAZADO")
@@ -740,6 +730,59 @@ def main():
     sistema.registrar_pasajero()
 
     sistema.mostrar_reporte()
+
+    consultas = SistemaConsultas(sistema.aprobados, sistema.rechazados)
+
+    MENU = """
+╔══════════════════════════════╗
+║        MENÚ DE CONSULTAS     ║
+╠══════════════════════════════╣
+║  1. Ver aprobados            ║
+║  2. Ver rechazados           ║
+║  3. Buscar pasajero          ║
+║  4. Equipaje en bodega       ║
+║  5. Estadísticas             ║
+║  ── Filtros ─────────────────║
+║  6. Filtrar por destino      ║
+║  7. Filtrar por nacionalidad ║
+║  8. Filtrar por rango de edad║
+║  ── Reportes ────────────────║
+║  9. Destinos frecuentes      ║
+║ 10. Pasajeros sin cargo      ║
+║ 11. Exportar reporte (.txt)  ║
+║ ─────────────────────────────║
+║  0. Salir                    ║
+╚══════════════════════════════╝"""
+
+    ACCIONES = {
+        "1": consultas.mostrar_aprobados,
+        "2": consultas.mostrar_rechazados,
+        "3": consultas.buscar_pasajero,
+        "4": consultas.mostrar_bodega,
+        "5": consultas.mostrar_estadisticas,
+        "6": consultas.filtrar_por_destino,
+        "7": consultas.filtrar_por_nacionalidad,
+        "8": consultas.filtrar_por_edad,
+        "9": consultas.mostrar_destinos,
+        "10": consultas.mostrar_sin_cargo,
+        "11": consultas.exportar_reporte,
+    }
+
+    while True:
+        print(MENU)
+
+        opcion = input("Opción: ").strip()
+
+        if opcion == "0":
+            print("\n  Hasta luego.\n")
+            break
+
+        accion = ACCIONES.get(opcion)
+
+        if accion:
+            accion()
+        else:
+            print("  ✘ Opción no válida.")
 
 
 if __name__ == "__main__":
