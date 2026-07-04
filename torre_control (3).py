@@ -1,12 +1,12 @@
 from collections import Counter
- 
+
 
 import queue
 
- 
+
 from Aeropuerto import SistemaAeropuerto, SistemaConsultas
- 
- 
+
+
 class Piloto:
     def __init__(
         self,
@@ -19,8 +19,8 @@ class Piloto:
         self.licencia = licencia
         self.horas_vuelo = horas_vuelo
         self.disponible = disponible
- 
- 
+
+
 class Aeronave:
     def __init__(
         self,
@@ -33,8 +33,8 @@ class Aeronave:
         self.modelo = modelo
         self.capacidad = capacidad
         self.disponible = disponible
- 
- 
+
+
 class Vuelo:
     def __init__(
         self,
@@ -50,8 +50,7 @@ class Vuelo:
         self.estado = "Pendiente"
         self.piloto: Piloto | None = None
         self.aeronave: Aeronave | None = None
- 
- 
+
 
 class SolicitudDespegue:
     def __init__(
@@ -69,14 +68,15 @@ class SolicitudDespegue:
         self.clima_favorable = clima_favorable
         self.pista_libre = pista_libre
         self.combustible_suficiente = combustible_suficiente
- 
- 
+
 
 class ColaPrioridadVuelos:
     def __init__(self) -> None:
         self._cola: "queue.PriorityQueue" = queue.PriorityQueue()
-        self._contador = 0  # Desempata solicitudes con la misma prioridad (orden de llegada)
- 
+        self._contador = (
+            0  # Desempata solicitudes con la misma prioridad (orden de llegada)
+        )
+
     def encolar(self, solicitud: SolicitudDespegue, prioridad: int) -> None:
         # Prioridad menor = se atiende primero (1=emergencia, 5=normal)
         self._contador += 1
@@ -85,33 +85,32 @@ class ColaPrioridadVuelos:
             f"  Vuelo {solicitud.vuelo.codigo} encolado con prioridad {prioridad} "
             f"(1=emergencia, 5=normal)."
         )
- 
+
     def siguiente(self) -> SolicitudDespegue | None:
         if self._cola.empty():
             return None
         _, _, solicitud = self._cola.get()
         return solicitud
- 
+
     def esta_vacia(self) -> bool:
         return self._cola.empty()
 
- 
- 
+
 class ControladorAereo:
     HORAS_MINIMAS = 500
- 
+
     def verificar_piloto(self, piloto: Piloto) -> tuple[bool, str]:
         if not piloto.disponible:
             return False, "Piloto no disponible"
         if piloto.horas_vuelo < self.HORAS_MINIMAS:
             return False, f"Pocas horas de experiencia (minimo {self.HORAS_MINIMAS})"
         return True, "Piloto aprobado"
- 
+
     def verificar_aeronave(self, aeronave: Aeronave) -> tuple[bool, str]:
         if not aeronave.disponible:
             return False, "Aeronave no disponible"
         return True, "Aeronave aprobada"
- 
+
     def verificar_capacidad(self, vuelo: Vuelo, aeronave: Aeronave) -> tuple[bool, str]:
         if vuelo.cantidad_pasajeros > aeronave.capacidad:
             return (
@@ -119,22 +118,22 @@ class ControladorAereo:
                 f"Capacidad excedida ({vuelo.cantidad_pasajeros} pax / capacidad {aeronave.capacidad})",
             )
         return True, "Capacidad aprobada"
- 
+
     def verificar_clima(self, clima_favorable: bool) -> tuple[bool, str]:
         if not clima_favorable:
             return False, "Clima desfavorable"
         return True, "Clima favorable"
- 
+
     def verificar_pista(self, pista_libre: bool) -> tuple[bool, str]:
         if not pista_libre:
             return False, "Pista ocupada"
         return True, "Pista libre"
- 
+
     def verificar_combustible(self, combustible_suficiente: bool) -> tuple[bool, str]:
         if not combustible_suficiente:
             return False, "Combustible insuficiente"
         return True, "Combustible OK"
- 
+
     def autorizar_despegue(
         self,
         vuelo: Vuelo,
@@ -147,53 +146,53 @@ class ControladorAereo:
         print("\n" + "=" * 60)
         print("  VERIFICACIONES DE CONTROL AEREO")
         print("=" * 60)
- 
+
         motivos_rechazo: list[str] = []
- 
+
         valido, mensaje = self.verificar_piloto(piloto)
         print(f"  Piloto:       {mensaje}")
         if not valido:
             motivos_rechazo.append(mensaje)
- 
+
         valido, mensaje = self.verificar_aeronave(aeronave)
         print(f"  Aeronave:     {mensaje}")
         if not valido:
             motivos_rechazo.append(mensaje)
- 
+
         valido, mensaje = self.verificar_capacidad(vuelo, aeronave)
         print(f"  Capacidad:    {mensaje}")
         if not valido:
             motivos_rechazo.append(mensaje)
- 
+
         valido, mensaje = self.verificar_clima(clima_favorable)
         print(f"  Clima:        {mensaje}")
         if not valido:
             motivos_rechazo.append(mensaje)
- 
+
         valido, mensaje = self.verificar_pista(pista_libre)
         print(f"  Pista:        {mensaje}")
         if not valido:
             motivos_rechazo.append(mensaje)
- 
+
         valido, mensaje = self.verificar_combustible(combustible_suficiente)
         print(f"  Combustible:  {mensaje}")
         if not valido:
             motivos_rechazo.append(mensaje)
- 
+
         if len(motivos_rechazo) == 0:
             vuelo.estado = "Autorizado"
             vuelo.piloto = piloto
             vuelo.aeronave = aeronave
             return True, []
- 
+
         vuelo.estado = "Denegado"
         return False, motivos_rechazo
- 
- 
+
+
 class ConsultasVuelos:
     def __init__(self, vuelos: list[Vuelo]) -> None:
         self.vuelos = vuelos
- 
+
     def mostrar_todos(self) -> None:
         print("\nHISTORIAL DE VUELOS")
         if not self.vuelos:
@@ -204,7 +203,7 @@ class ConsultasVuelos:
                 f"  {i}. [{vuelo.estado}] {vuelo.codigo} | "
                 f"{vuelo.origen} -> {vuelo.destino} | {vuelo.cantidad_pasajeros} pax"
             )
- 
+
     def mostrar_autorizados(self) -> None:
         print("\nVUELOS AUTORIZADOS")
         autorizados = [v for v in self.vuelos if v.estado == "Autorizado"]
@@ -221,7 +220,7 @@ class ConsultasVuelos:
             print(f"  {i}. {vuelo.codigo} | {vuelo.origen} -> {vuelo.destino}")
             print(f"     Piloto: {nombre_piloto} | Aeronave: {modelo_aeronave}")
             print(f"     Pasajeros: {vuelo.cantidad_pasajeros}")
- 
+
     def mostrar_denegados(self) -> None:
         print("\nVUELOS DENEGADOS")
         denegados = [v for v in self.vuelos if v.estado == "Denegado"]
@@ -233,7 +232,7 @@ class ConsultasVuelos:
                 f"  {i}. {vuelo.codigo} | "
                 f"{vuelo.origen} -> {vuelo.destino} | {vuelo.cantidad_pasajeros} pax"
             )
- 
+
     def buscar_vuelo(self) -> None:
         codigo = input("Codigo de vuelo a buscar: ").strip().upper()
         for vuelo in self.vuelos:
@@ -254,7 +253,7 @@ class ConsultasVuelos:
                     print(f"  Capacidad:  {vuelo.aeronave.capacidad}")
                 return
         print("  Vuelo no encontrado.")
- 
+
     def filtrar_por_destino(self) -> None:
         destino = input("Destino a filtrar: ").strip().lower()
         resultados = [v for v in self.vuelos if v.destino.lower() == destino]
@@ -264,7 +263,7 @@ class ConsultasVuelos:
             return
         for i, v in enumerate(resultados, 1):
             print(f"  {i}. [{v.estado}] {v.codigo} - {v.cantidad_pasajeros} pax")
- 
+
     def mostrar_estadisticas(self) -> None:
         total = len(self.vuelos)
         autorizados = len([v for v in self.vuelos if v.estado == "Autorizado"])
@@ -291,32 +290,31 @@ class ConsultasVuelos:
                 f"  Destino popular:    {destino_top[0][0]} ({destino_top[0][1]} vuelos)"
             )
         print("=" * 45)
- 
- 
+
+
 class SistemaTorreControl:
     def __init__(self, pasajeros_aprobados: list[tuple]) -> None:
         self.pasajeros_aprobados = pasajeros_aprobados
         self.vuelos: list[Vuelo] = []
         self.controlador = ControladorAereo()
         self.cola_prioridad = ColaPrioridadVuelos()
- 
+
     def _leer_texto(self, mensaje: str) -> str:
         return input(mensaje).strip()
- 
+
     def _leer_entero(self, mensaje: str) -> int:
         while True:
             try:
                 return int(input(mensaje))
             except ValueError:
                 print("  Error, ingresa el digito en entero por favor")
- 
+
     def _leer_booleano(self, mensaje: str) -> bool:
         while True:
             respuesta = input(mensaje).strip().lower()
             if respuesta in ("s", "n"):
                 return respuesta == "s"
             print("  Error, responde 's' o 'n'")
- 
 
     def _leer_prioridad(self) -> int:
         while True:
@@ -327,43 +325,42 @@ class SistemaTorreControl:
             if 1 <= prioridad <= 5:
                 return prioridad
             print("  Error, la prioridad debe estar entre 1 y 5")
- 
+
     def registrar_vuelo(self) -> None:
         print("\n" + "=" * 60)
         print("  REGISTRO DE VUELO")
         print("=" * 60)
- 
+
         cantidad_pasajeros = len(self.pasajeros_aprobados)
         print(f"\n  Pasajeros aprobados del sistema: {cantidad_pasajeros}")
- 
+
         print("\nDATOS DEL VUELO")
         codigo = self._leer_texto("Codigo del vuelo: ").upper()
         origen = self._leer_texto("Origen: ")
         destino = self._leer_texto("Destino: ")
- 
+
         print("\nDATOS DEL PILOTO")
         nombre_piloto = self._leer_texto("Nombre: ")
         licencia = self._leer_texto("Licencia: ")
         horas_vuelo = self._leer_entero("Horas de vuelo: ")
         piloto_disponible = self._leer_booleano("Disponible? (s/n): ")
- 
+
         print("\nDATOS DE LA AERONAVE")
         matricula = self._leer_texto("Matricula: ").upper()
         modelo = self._leer_texto("Modelo: ")
         capacidad = self._leer_entero("Capacidad maxima: ")
         aeronave_disponible = self._leer_booleano("Disponible? (s/n): ")
- 
+
         print("\nCONDICIONES")
         clima_favorable = self._leer_booleano("Clima favorable? (s/n): ")
         pista_libre = self._leer_booleano("Pista libre? (s/n): ")
         combustible_suficiente = self._leer_booleano("Combustible suficiente? (s/n): ")
- 
+
         print("\nPRIORIDAD")
         prioridad = self._leer_prioridad()
         piloto = Piloto(nombre_piloto, licencia, horas_vuelo, piloto_disponible)
         aeronave = Aeronave(matricula, modelo, capacidad, aeronave_disponible)
         vuelo = Vuelo(codigo, origen, destino, cantidad_pasajeros)
- 
 
         solicitud = SolicitudDespegue(
             vuelo,
@@ -376,22 +373,20 @@ class SistemaTorreControl:
         self.cola_prioridad.encolar(solicitud, prioridad)
         self.vuelos.append(vuelo)
 
- 
-
     def procesar_cola_despegues(self) -> None:
         if self.cola_prioridad.esta_vacia():
             print("\n  No hay vuelos pendientes en la cola de prioridad.")
             return
- 
+
         print("\n" + "=" * 60)
         print("  PROCESANDO COLA DE DESPEGUES POR PRIORIDAD")
         print("=" * 60)
- 
+
         while not self.cola_prioridad.esta_vacia():
             solicitud = self.cola_prioridad.siguiente()
             if solicitud is None:
                 break
- 
+
             autorizado, motivos = self.controlador.autorizar_despegue(
                 solicitud.vuelo,
                 solicitud.piloto,
@@ -400,7 +395,7 @@ class SistemaTorreControl:
                 solicitud.pista_libre,
                 solicitud.combustible_suficiente,
             )
- 
+
             print("\n" + "-" * 60)
             if autorizado:
                 print("  DESPEGUE AUTORIZADO")
@@ -415,13 +410,12 @@ class SistemaTorreControl:
                 for motivo in motivos:
                     print(f"    - {motivo}")
             print("-" * 60)
-  
- 
+
     def exportar_reporte(self) -> None:
         nombre_archivo = "reporte_torre_control.txt"
         autorizados = [v for v in self.vuelos if v.estado == "Autorizado"]
         denegados = [v for v in self.vuelos if v.estado == "Denegado"]
- 
+
         lineas = [
             "=" * 60,
             "  REPORTE TORRE DE CONTROL",
@@ -435,52 +429,50 @@ class SistemaTorreControl:
             "VUELOS AUTORIZADOS",
             "-" * 60,
         ]
- 
+
         for i, v in enumerate(autorizados, 1):
             nombre_piloto = v.piloto.nombre if v.piloto is not None else "Sin asignar"
             lineas.append(
                 f"{i:>3}. {v.codigo:<10} {v.origen:<15} -> {v.destino:<15} "
                 f"| {v.cantidad_pasajeros} pax | Piloto: {nombre_piloto}"
             )
- 
+
         lineas += ["", "-" * 60, "VUELOS DENEGADOS", "-" * 60]
- 
+
         for i, v in enumerate(denegados, 1):
             lineas.append(
                 f"{i:>3}. {v.codigo:<10} {v.origen:<15} -> {v.destino:<15} "
                 f"| {v.cantidad_pasajeros} pax"
             )
- 
+
         lineas += ["", "=" * 60]
- 
+
         with open(nombre_archivo, "w", encoding="utf-8") as f:
             f.write("\n".join(lineas))
- 
+
         print(f"\n  Reporte exportado como '{nombre_archivo}'")
- 
- 
+
+
 def main() -> None:
     sistema = SistemaAeropuerto()
     sistema.registrar_pasajero()
     sistema.mostrar_reporte()
- 
+
     torre = SistemaTorreControl(sistema.aprobados)
- 
+
     print("\n" + "=" * 60)
     print("  TORRE DE CONTROL")
     print("=" * 60)
- 
+
     cantidad_vuelos = torre._leer_entero("Cuantos vuelos desea registrar?: ")
     for _ in range(cantidad_vuelos):
         torre.registrar_vuelo()
- 
-
 
     torre.procesar_cola_despegues()
- 
+
     consultas_aeropuerto = SistemaConsultas(sistema.aprobados, sistema.rechazados)
     consultas_vuelos = ConsultasVuelos(torre.vuelos)
- 
+
     menu = """
 ============================================
            MENU PRINCIPAL
@@ -508,7 +500,7 @@ def main() -> None:
   ----------------------------------------
    0. Salir
 ============================================"""
- 
+
     acciones = {
         "1": consultas_aeropuerto.mostrar_aprobados,
         "2": consultas_aeropuerto.mostrar_rechazados,
@@ -529,7 +521,7 @@ def main() -> None:
         "17": consultas_vuelos.mostrar_estadisticas,
         "18": torre.exportar_reporte,
     }
- 
+
     while True:
         print(menu)
         opcion = input("Opcion: ").strip()
@@ -541,7 +533,7 @@ def main() -> None:
             accion()
         else:
             print("  Error, opcion no valida.")
- 
- 
+
+
 if __name__ == "__main__":
     main()

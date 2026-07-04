@@ -179,27 +179,29 @@ class ValidadorPasajero:
         return True, motivos_aprobado
 
     def validar_equipaje(self, equipaje: Equipaje) -> None:
- 
+
         if equipaje.cantidad_maletas < 1:
             return
- 
+
         if equipaje.cantidad_maletas > 3:
             exceso = equipaje.cantidad_maletas - 3
             equipaje.cargo_adicional += exceso * 50000.0
             equipaje.en_bodega = True
- 
+
         if equipaje.peso_total > 23.0:
             exceso = equipaje.peso_total - 23.0
             equipaje.cargo_adicional += exceso * 10000.0
             equipaje.en_bodega = True
- 
+
         # Evalua las dimensiones de CADA maleta individualmente
         for i, maleta in enumerate(equipaje.maletas, 1):
             if maleta["largo"] > 55 or maleta["ancho"] > 40 or maleta["alto"] > 25:
                 equipaje.cargo_adicional += 50000.0
                 equipaje.en_bodega = True
-                print(f"  Maleta {i}: dimensiones exceden el limite, cargo adicional $50.000")
-                
+                print(
+                    f"  Maleta {i}: dimensiones exceden el limite, cargo adicional $50.000"
+                )
+
 
 # Esta clase representa el sistema de control de pasajeros en un aeropuerto. Permite registrar pasajeros, validar sus documentos y equipaje.
 # Generando un reporte final indicando los pasajeros aprobados y rechazados.
@@ -351,7 +353,7 @@ class SistemaAeropuerto:
                 ancho = 0.0
                 alto = 0.0
                 maletas = []
- 
+
                 for i in range(1, cantidad_maletas + 1):
                     print(f"\n  Maleta {i} de {cantidad_maletas}:")
                     peso = self.consola.leer_decimal("  Peso (kg): ")
@@ -360,7 +362,7 @@ class SistemaAeropuerto:
                     al = self.consola.leer_decimal("  Alto (cm): ")
                     peso_total += peso
                     maletas.append({"largo": l, "ancho": a, "alto": al, "peso": peso})
- 
+
             objetos_no_permitidos = leer_objetos_no_permitidos()
 
             # Este bloque de código crea instancias de las clases Pasajero, Documento y Equipaje utilizando los datos ingresados por el usuario.
@@ -438,7 +440,6 @@ class SistemaAeropuerto:
 
 
 class SistemaConsultas:
-
     def __init__(self, aprobados: list, rechazados: list) -> None:
         self.aprobados = aprobados
         self.rechazados = rechazados
@@ -454,7 +455,11 @@ class SistemaConsultas:
             return
 
         for i, (pasajero, equipaje) in enumerate(self.aprobados, 1):
-            cargo = f"  cargo: ${equipaje.cargo_adicional:,.0f}" if equipaje.cargo_adicional else ""
+            cargo = (
+                f"  cargo: ${equipaje.cargo_adicional:,.0f}"
+                if equipaje.cargo_adicional
+                else ""
+            )
             print(f"  {i}. {pasajero.nombre} → {pasajero.destino}{cargo}")
 
     def mostrar_rechazados(self) -> None:
@@ -496,7 +501,9 @@ class SistemaConsultas:
         print(f"  Teléfono:     {pasajero.telefono}")
         print(f"  Correo:       {pasajero.correo}")
         print(f"  Tipo sangre:  {pasajero.tipo_sangre}")
-        print(f"  Maletas:      {equipaje.cantidad_maletas}  |  Peso: {equipaje.peso_total} kg")
+        print(
+            f"  Maletas:      {equipaje.cantidad_maletas}  |  Peso: {equipaje.peso_total} kg"
+        )
         print(f"  En bodega:    {'Sí' if equipaje.en_bodega else 'No'}")
         print(f"  Cargo extra:  ${equipaje.cargo_adicional:,.0f}")
 
@@ -516,7 +523,8 @@ class SistemaConsultas:
         destino = input("Destino a filtrar: ").strip().lower()
 
         resultados = [
-            pasajero for pasajero, _ in self.aprobados
+            pasajero
+            for pasajero, _ in self.aprobados
             if pasajero.destino.lower() == destino
         ]
 
@@ -534,13 +542,11 @@ class SistemaConsultas:
         nacionalidad = input("Nacionalidad a filtrar: ").strip().lower()
 
         aprobados = [
-            p for p, _ in self.aprobados
-            if p.nacionalidad.lower() == nacionalidad
+            p for p, _ in self.aprobados if p.nacionalidad.lower() == nacionalidad
         ]
 
         rechazados = [
-            (p, m) for p, m in self.rechazados
-            if p.nacionalidad.lower() == nacionalidad
+            (p, m) for p, m in self.rechazados if p.nacionalidad.lower() == nacionalidad
         ]
 
         print(f"\nPASAJEROS DE NACIONALIDAD: {nacionalidad.upper()}")
@@ -579,9 +585,7 @@ class SistemaConsultas:
 
     def mostrar_bodega(self) -> None:
 
-        en_bodega = [
-            (p, e) for p, e in self.aprobados if e.en_bodega
-        ]
+        en_bodega = [(p, e) for p, e in self.aprobados if e.en_bodega]
 
         print("\nEQUIPAJE EN BODEGA")
 
@@ -601,10 +605,7 @@ class SistemaConsultas:
 
     def mostrar_sin_cargo(self) -> None:
 
-        sin_cargo = [
-            p for p, e in self.aprobados
-            if e.cargo_adicional == 0
-        ]
+        sin_cargo = [p for p, e in self.aprobados if e.cargo_adicional == 0]
 
         print("\nPASAJEROS SIN CARGO ADICIONAL")
 
@@ -626,11 +627,7 @@ class SistemaConsultas:
         destinos = [p.destino for p, _ in self.aprobados]
         destino_top = Counter(destinos).most_common(1)
 
-        mayor = max(
-            self.aprobados,
-            key=lambda x: x[1].cargo_adicional,
-            default=None
-        )
+        mayor = max(self.aprobados, key=lambda x: x[1].cargo_adicional, default=None)
 
         motivos = Counter(m for _, m in self.rechazados)
 
@@ -649,7 +646,9 @@ class SistemaConsultas:
         print(f"  Dinero recaudado:     ${dinero:,.0f}")
 
         if destino_top:
-            print(f"  Destino más popular:  {destino_top[0][0]} ({destino_top[0][1]} pax)")
+            print(
+                f"  Destino más popular:  {destino_top[0][0]} ({destino_top[0][1]} pax)"
+            )
 
         if mayor and mayor[1].cargo_adicional > 0:
             print(
