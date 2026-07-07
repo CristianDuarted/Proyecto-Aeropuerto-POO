@@ -562,9 +562,13 @@ class SistemaConsultas:
     def filtrar_por_edad(self) -> None:
 
         print("Rango de edad:")
-        edad_min = int(input("  Desde: "))
-        edad_max = int(input("  Hasta: "))
-
+        try:
+            edad_min = int(input("  Desde: "))
+            edad_max = int(input("  Hasta: "))
+        except ValueError:
+            print("  Error, ingresa solo números enteros.")
+            return
+       
         resultados = [
             (pasajero, equipaje)
             for pasajero, equipaje in self.aprobados
