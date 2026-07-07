@@ -198,7 +198,7 @@ class ValidadorPasajero:
                 equipaje.cargo_adicional += 50000.0
                 equipaje.en_bodega = True
                 print(
-                    f"  Maleta {i}: dimensiones exceden el limite, cargo adicional $50.000"
+                    f"  Maleta {i}: dimensiones exceden el limite, cargo $50.000"
                 )
 
 
