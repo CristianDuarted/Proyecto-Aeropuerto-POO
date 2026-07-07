@@ -4,7 +4,6 @@ y generar un reporte final indicando los pasajeros aprobados y rechazados."""
 
 from collections import Counter
 import re  # Sirve para validar los datos de entrada del usuario, como nombres, correos electrónicos y números de teléfono.
-from collections import Counter
 
 
 # ── Utilidades de consola ──────────────────────────────────────
