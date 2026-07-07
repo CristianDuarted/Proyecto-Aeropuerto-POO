@@ -1,9 +1,5 @@
-from collections import Counter
-
-
 import queue
-
-
+from collections import Counter
 from Aeropuerto import SistemaAeropuerto, SistemaConsultas
 
 
