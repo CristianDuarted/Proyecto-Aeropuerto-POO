@@ -197,9 +197,7 @@ class ValidadorPasajero:
             if maleta["largo"] > 55 or maleta["ancho"] > 40 or maleta["alto"] > 25:
                 equipaje.cargo_adicional += 50000.0
                 equipaje.en_bodega = True
-                print(
-                    f"  Maleta {i}: dimensiones exceden el limite, cargo $50.000"
-                )
+                print(f"  Maleta {i}: dimensiones exceden el limite, cargo $50.000")
 
 
 # Esta clase representa el sistema de control de pasajeros en un aeropuerto. Permite registrar pasajeros, validar sus documentos y equipaje.
@@ -568,7 +566,7 @@ class SistemaConsultas:
         except ValueError:
             print("  Error, ingresa solo números enteros.")
             return
-       
+
         resultados = [
             (pasajero, equipaje)
             for pasajero, equipaje in self.aprobados
@@ -638,7 +636,7 @@ class SistemaConsultas:
                 linea = linea.strip()
                 if linea.startswith("- "):
                     motivos[linea[2:]] += 1
-                    
+
         print("\n" + "═" * 45)
         print("  ESTADÍSTICAS")
         print("═" * 45)
