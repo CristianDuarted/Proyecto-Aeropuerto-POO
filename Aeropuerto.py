@@ -355,10 +355,10 @@ class SistemaAeropuerto:
 
                 for i in range(1, cantidad_maletas + 1):
                     print(f"\n  Maleta {i} de {cantidad_maletas}:")
-                    peso = self.consola.leer_decimal("  Peso (kg): ")
-                    l = self.consola.leer_decimal("  Largo (cm): ")
-                    a = self.consola.leer_decimal("  Ancho (cm): ")
-                    al = self.consola.leer_decimal("  Alto (cm): ")
+                    peso = self.consola.leer_decimal_positivo("  Peso (kg): ")
+                    l = self.consola.leer_decimal_positivo("  Largo (cm): ")
+                    a = self.consola.leer_decimal_positivo("  Ancho (cm): ")
+                    al = self.consola.leer_decimal_positivo("  Alto (cm): ")
                     peso_total += peso
                     maletas.append({"largo": l, "ancho": a, "alto": al, "peso": peso})
 
@@ -628,8 +628,13 @@ class SistemaConsultas:
 
         mayor = max(self.aprobados, key=lambda x: x[1].cargo_adicional, default=None)
 
-        motivos = Counter(m for _, m in self.rechazados)
-
+        motivos: Counter[str] = Counter()
+        for _, m in self.rechazados:
+            for linea in m.splitlines():
+                linea = linea.strip()
+                if linea.startswith("- "):
+                    motivos[linea[2:]] += 1
+                    
         print("\n" + "═" * 45)
         print("  ESTADÍSTICAS")
         print("═" * 45)
