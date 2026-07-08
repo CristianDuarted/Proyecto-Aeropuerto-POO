@@ -1,5 +1,5 @@
+import queue
 from collections import Counter
-
 from Aeropuerto import SistemaAeropuerto, SistemaConsultas
 
 
@@ -46,6 +46,50 @@ class Vuelo:
         self.estado = "Pendiente"
         self.piloto: Piloto | None = None
         self.aeronave: Aeronave | None = None
+
+
+class SolicitudDespegue:
+    def __init__(
+        self,
+        vuelo: Vuelo,
+        piloto: Piloto,
+        aeronave: Aeronave,
+        clima_favorable: bool,
+        pista_libre: bool,
+        combustible_suficiente: bool,
+    ) -> None:
+        self.vuelo = vuelo
+        self.piloto = piloto
+        self.aeronave = aeronave
+        self.clima_favorable = clima_favorable
+        self.pista_libre = pista_libre
+        self.combustible_suficiente = combustible_suficiente
+
+
+class ColaPrioridadVuelos:
+    def __init__(self) -> None:
+        self._cola: "queue.PriorityQueue" = queue.PriorityQueue()
+        self._contador = (
+            0  # Desempata solicitudes con la misma prioridad (orden de llegada)
+        )
+
+    def encolar(self, solicitud: SolicitudDespegue, prioridad: int) -> None:
+        # Prioridad menor = se atiende primero (1=emergencia, 5=normal)
+        self._contador += 1
+        self._cola.put((prioridad, self._contador, solicitud))
+        print(
+            f"  Vuelo {solicitud.vuelo.codigo} encolado con prioridad {prioridad} "
+            f"(1=emergencia, 5=normal)."
+        )
+
+    def siguiente(self) -> SolicitudDespegue | None:
+        if self._cola.empty():
+            return None
+        _, _, solicitud = self._cola.get()
+        return solicitud
+
+    def esta_vacia(self) -> bool:
+        return self._cola.empty()
 
 
 class ControladorAereo:
@@ -249,6 +293,7 @@ class SistemaTorreControl:
         self.pasajeros_aprobados = pasajeros_aprobados
         self.vuelos: list[Vuelo] = []
         self.controlador = ControladorAereo()
+        self.cola_prioridad = ColaPrioridadVuelos()
 
     def _leer_texto(self, mensaje: str) -> str:
         return input(mensaje).strip()
@@ -266,6 +311,16 @@ class SistemaTorreControl:
             if respuesta in ("s", "n"):
                 return respuesta == "s"
             print("  Error, responde 's' o 'n'")
+
+    def _leer_prioridad(self) -> int:
+        while True:
+            prioridad = self._leer_entero(
+                "Prioridad del vuelo (1=emergencia, 2=urgente, 3=carga, "
+                "4=internacional, 5=normal): "
+            )
+            if 1 <= prioridad <= 5:
+                return prioridad
+            print("  Error, la prioridad debe estar entre 1 y 5")
 
     def registrar_vuelo(self) -> None:
         print("\n" + "=" * 60)
@@ -297,11 +352,13 @@ class SistemaTorreControl:
         pista_libre = self._leer_booleano("Pista libre? (s/n): ")
         combustible_suficiente = self._leer_booleano("Combustible suficiente? (s/n): ")
 
+        print("\nPRIORIDAD")
+        prioridad = self._leer_prioridad()
         piloto = Piloto(nombre_piloto, licencia, horas_vuelo, piloto_disponible)
         aeronave = Aeronave(matricula, modelo, capacidad, aeronave_disponible)
         vuelo = Vuelo(codigo, origen, destino, cantidad_pasajeros)
 
-        autorizado, motivos = self.controlador.autorizar_despegue(
+        solicitud = SolicitudDespegue(
             vuelo,
             piloto,
             aeronave,
@@ -309,20 +366,46 @@ class SistemaTorreControl:
             pista_libre,
             combustible_suficiente,
         )
+        self.cola_prioridad.encolar(solicitud, prioridad)
+        self.vuelos.append(vuelo)
+
+    def procesar_cola_despegues(self) -> None:
+        if self.cola_prioridad.esta_vacia():
+            print("\n  No hay vuelos pendientes en la cola de prioridad.")
+            return
 
         print("\n" + "=" * 60)
-        if autorizado:
-            print("  DESPEGUE AUTORIZADO")
-            print(f"  Vuelo {vuelo.codigo}: {vuelo.origen} -> {vuelo.destino}")
-            print(f"  Pasajeros a bordo: {vuelo.cantidad_pasajeros}")
-        else:
-            print("  DESPEGUE DENEGADO")
-            print("  Motivos:")
-            for motivo in motivos:
-                print(f"    - {motivo}")
+        print("  PROCESANDO COLA DE DESPEGUES POR PRIORIDAD")
         print("=" * 60)
 
-        self.vuelos.append(vuelo)
+        while not self.cola_prioridad.esta_vacia():
+            solicitud = self.cola_prioridad.siguiente()
+            if solicitud is None:
+                break
+
+            autorizado, motivos = self.controlador.autorizar_despegue(
+                solicitud.vuelo,
+                solicitud.piloto,
+                solicitud.aeronave,
+                solicitud.clima_favorable,
+                solicitud.pista_libre,
+                solicitud.combustible_suficiente,
+            )
+
+            print("\n" + "-" * 60)
+            if autorizado:
+                print("  DESPEGUE AUTORIZADO")
+                print(
+                    f"  Vuelo {solicitud.vuelo.codigo}: "
+                    f"{solicitud.vuelo.origen} -> {solicitud.vuelo.destino}"
+                )
+                print(f"  Pasajeros a bordo: {solicitud.vuelo.cantidad_pasajeros}")
+            else:
+                print("  DESPEGUE DENEGADO")
+                print("  Motivos:")
+                for motivo in motivos:
+                    print(f"    - {motivo}")
+            print("-" * 60)
 
     def exportar_reporte(self) -> None:
         nombre_archivo = "reporte_torre_control.txt"
@@ -380,6 +463,8 @@ def main() -> None:
     cantidad_vuelos = torre._leer_entero("Cuantos vuelos desea registrar?: ")
     for _ in range(cantidad_vuelos):
         torre.registrar_vuelo()
+
+    torre.procesar_cola_despegues()
 
     consultas_aeropuerto = SistemaConsultas(sistema.aprobados, sistema.rechazados)
     consultas_vuelos = ConsultasVuelos(torre.vuelos)
