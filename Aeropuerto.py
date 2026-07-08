@@ -111,7 +111,7 @@ class Equipaje:
         elementos_peligrosos: bool,
         material_inflamable: bool,
         armas: bool,
-        maletas: list = None,
+        maletas: list | None = None,
     ) -> None:
 
         self.cantidad_maletas = cantidad_maletas
@@ -188,8 +188,7 @@ class ValidadorPasajero:
             equipaje.en_bodega = True
 
         if equipaje.peso_total > 23.0:
-            exceso = equipaje.peso_total - 23.0
-            equipaje.cargo_adicional += exceso * 10000.0
+            equipaje.cargo_adicional += (equipaje.peso_total - 23.0) * 10000.0
             equipaje.en_bodega = True
 
         # Evalua las dimensiones de CADA maleta individualmente
