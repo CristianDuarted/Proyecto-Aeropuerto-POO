@@ -2,9 +2,9 @@
   REPORTE FINAL - SISTEMA AEROPUERTO
 ============================================================
 
-Total registrados : 2
+Total registrados : 0
 Aprobados         : 0
-Rechazados        : 2
+Rechazados        : 0
 Dinero recaudado  : $0
 
 ────────────────────────────────────────────────────────────
@@ -14,19 +14,5 @@ PASAJEROS APROBADOS
 ────────────────────────────────────────────────────────────
 PASAJEROS RECHAZADOS
 ────────────────────────────────────────────────────────────
-  1. da                         
- motivo: 
-- Pasaporte vencido
-- No realizó check-in
-- Boleto inválido
-- Transporta armas
-- Material inflamable
-  2. da                         
- motivo: 
-- Pasaporte vencido
-- No realizó check-in
-- Transporta armas
-- Material inflamable
-- Elementos peligrosos
 
 ============================================================
