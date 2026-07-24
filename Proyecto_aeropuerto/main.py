@@ -1,5 +1,5 @@
-from Proyecto_aeropuerto.torre_control import ConsultasVuelos
-from Proyecto_aeropuerto.Aeropuerto import SistemaConsultas
+from Proyecto_aeropuerto.consultas.sistema_consultas import SistemaConsultas
+from Proyecto_aeropuerto.consultas.consultas_vuelos import ConsultasVuelos
 from Proyecto_aeropuerto.Sistemas.sistema_aeropuerto import SistemaAeropuerto
 from Proyecto_aeropuerto.Sistemas.sistema_torre_control import SistemaTorreControl
 from Proyecto_aeropuerto.Consola import Consola
