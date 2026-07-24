@@ -111,7 +111,6 @@ class SistemaConsultas:
                 return
         print("  Pasajero no encontrado.")
 
-    
     def _mostrar_ficha_aprobado(self, pasajero: Pasajero, equipaje: Equipaje) -> None:
         print("\n-- FICHA PASAJERO (APROBADO) --")
         print(f"  Nombre:       {pasajero.nombre}")
