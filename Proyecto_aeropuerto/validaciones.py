@@ -3,7 +3,6 @@ from pathlib import Path
 
 from .modelos import Pasajero, Documento, Equipaje
 
-
 # Esta clase valida la informacion de un pasajero, sus documentos y su equipaje.
 class ValidadorPasajero:
     PAISES_CON_VISA = ["canada", "estados unidos", "australia", "reino unido"]
