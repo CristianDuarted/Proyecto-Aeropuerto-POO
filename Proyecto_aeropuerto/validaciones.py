@@ -3,6 +3,7 @@ from pathlib import Path
 
 from .modelos import Pasajero, Documento, Equipaje
 
+
 # Esta clase valida la informacion de un pasajero, sus documentos y su equipaje.
 class ValidadorPasajero:
     PAISES_CON_VISA = ["canada", "estados unidos", "australia", "reino unido"]
@@ -119,7 +120,9 @@ class SistemaConsultas:
         print(f"  Telefono:     {pasajero.telefono}")
         print(f"  Correo:       {pasajero.correo}")
         print(f"  Tipo sangre:  {pasajero.tipo_sangre}")
-        print(f"  Maletas:      {equipaje.cantidad_maletas}  |  Peso: {equipaje.peso_total} kg")
+        print(
+            f"  Maletas:      {equipaje.cantidad_maletas}  |  Peso: {equipaje.peso_total} kg"
+        )
         print(f"  En bodega:    {'Si' if equipaje.en_bodega else 'No'}")
         print(f"  Cargo extra:  ${equipaje.cargo_adicional:,.0f}")
 
@@ -151,9 +154,7 @@ class SistemaConsultas:
             p for p, _ in self.aprobados if p.nacionalidad.lower() == nacionalidad
         ]
         rechazados = [
-            (p, m)
-            for p, m in self.rechazados
-            if p.nacionalidad.lower() == nacionalidad
+            (p, m) for p, m in self.rechazados if p.nacionalidad.lower() == nacionalidad
         ]
         print(f"\nPASAJEROS DE NACIONALIDAD: {nacionalidad.upper()}")
         print(f"  Aprobados: {len(aprobados)}")
@@ -229,9 +230,13 @@ class SistemaConsultas:
         print(f"  En bodega:            {en_bodega}")
         print(f"  Dinero recaudado:     ${dinero:,.0f}")
         if destino_top:
-            print(f"  Destino mas popular:  {destino_top[0][0]} ({destino_top[0][1]} pax)")
+            print(
+                f"  Destino mas popular:  {destino_top[0][0]} ({destino_top[0][1]} pax)"
+            )
         if mayor and mayor[1].cargo_adicional > 0:
-            print(f"  Mayor cargo:          {mayor[0].nombre} (${mayor[1].cargo_adicional:,.0f})")
+            print(
+                f"  Mayor cargo:          {mayor[0].nombre} (${mayor[1].cargo_adicional:,.0f})"
+            )
         if motivos:
             print("\n  Motivos de rechazo:")
             for motivo, cantidad in motivos.most_common():
