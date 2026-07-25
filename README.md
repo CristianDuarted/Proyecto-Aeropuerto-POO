@@ -1,176 +1,124 @@
-[![.github/workflows/ci.yml](https://github.com/dabarretor/Proyecto-Aeropuerto-POO/actions/workflows/ci.yml/badge.svg)](https://github.com/dabarretor/Proyecto-Aeropuerto-POO/actions/workflows/ci.yml)
+# Proyecto Aeropuerto — Sistema de Pasajeros y Torre de Control
 
-# Proyecto de programación orientada a objetos
-
-## Tabla de contenidos
-
-* [Definición de alternativa](#definición-de-alternativa)
-* [Diagrama UML](#diagrama-uml)
-* [Solución preliminar](#solución-preliminar)
+Sistema que simula el control de pasajeros y de vuelos en un aeropuerto,
+desarrollado en Python 3 aplicando Programación Orientada a Objetos:
+encapsulamiento, validación de datos, manejo de excepciones y separación en
+paquetes por responsabilidad.
 
 ---
 
-# Definición de alternativa
+## Arquitectura y Estructura del Proyecto
 
-Un aeropuerto internacional necesita un sistema para administrar el registro de pasajeros, recursos, gastos y ganancias del aeropuerto. Para ello, se requiere lo siguiente:
-
-1. El sistema debe registrar a los pasajeros y calcular el peso de sus maletas. Si el equipaje excede el límite permitido por la aerolínea, se debe generar un cobro adicional automático.
-
-2. Se debe validar si hay asientos disponibles en el avión. Si hay disponibles, se genera el pase de abordar. Si no, el sistema debe ofrecer una reprogramación automática asignando al pasajero al siguiente vuelo disponible.
-
-3. Revisar y calcular si la gasolina actual del avión es suficiente para llegar al destino.
-
-4. Calcular la rentabilidad de cada despegue. El sistema debe sumar los ingresos y restarle los gastos operativos.
-
-5. Si el vuelo es aprobado para despegar, se debe mostrar en pantalla que fue un éxito.
-
----
-# Objetivo del proyecto
-Este proyecto tiene como objetivo desarrollar un sistema de gestión aeroportuaria utilizando programación orientada a objetos (POO). El sistema busca simular y administrar diferentes procesos relacionados con el funcionamiento de un aeropuerto, incluyendo el registro de pasajeros, el control de equipaje, la asignación de asientos, la validación de combustible y el cálculo de rentabilidad de los vuelos.
-
-Además, el programa permite representar la interacción entre distintas entidades del sistema, como pasajeros, vuelos, aerolíneas, aviones y pases de abordar, aplicando conceptos fundamentales de POO como clases, objetos, atributos, métodos, asociaciones y encapsulamiento.
-
-La finalidad principal es ofrecer una solución organizada y modular que automatice procesos básicos de un aeropuerto y facilite la administración eficiente de los vuelos y recursos disponibles.
-
----
-# Diagrama UML
-
-```mermaid
-classDiagram
-    class Airport {
-        +name : str
-        +baggage_limit : float
-        +extra_baggage : float
-        +fuel_cost_per_liter : float
-        +register_passenger(passenger : Passenger)
-        +validate_available_seats(flight : Flight)
-        +assign_passenger_to_flight(passenger : Passenger, flight : Flight)
-        +check_fuel(flight : Flight)
-        +calculate_profit(takeoff : Takeoff)
-        +show_takeoff_success()
-    }
-
-    class Flight {
-        +flight_number : str
-        +origin : str
-        +destination : str
-        +date_time : str
-        +available_seats : int
-        +airplane : Airplane
-        +airline : Airline
-        +has_available_seats()
-        +assign_passenger(passenger : Passenger)
-        +calculate_income()
-    }
-
-    class Passenger {
-        +id : str
-        +name : str
-        +document : str
-        +nationality : str
-        +calculate_baggage_weight()
-        +get_total_baggage_weight()
-        +assign_flight(flight : Flight)
-    }
-
-    class Airplane {
-        +registration : str
-        +seat_capacity : int
-        +available_seats : int
-        +fuel_capacity : float
-        +current_fuel : float
-        +fuel_consumption_per_hour : float
-        +has_available_seats()
-        +has_enough_fuel(hours : float)
-        +calculate_required_fuel(hours : float)
-    }
-
-    class Airline {
-        +code : str
-        +name : str
-        +calculate_extra_charge(extra_weight : float)
-    }
-
-    class Takeoff {
-        +id : str
-        +flight_hours : float
-        +income : float
-        +operational_costs : float
-        +profitability : float
-        +calculate_profitability()
-    }
-
-    class Baggage {
-        +id : str
-        +weight : float
-        +get_weight()
-    }
-
-    class BoardingPass {
-        +code : str
-        +seat_number : str
-        +boarding_time : str
-        +show_information()
-    }
-    
-    class FlightStatus {
-        SCHEDULED
-        APPROVED
-        DEPARTED
-        CANCELED
-    }
-
-    Airport o-- Flight
-    Airport o-- Passenger
-    Airport --> Airline
-    Flight --> Airplane
-    Flight --> Airline
-    Flight --> Passenger
-    Flight *-- Takeoff
-    Passenger o-- Baggage
-    Passenger o-- BoardingPass
-    Airplane --> Takeoff
-    Takeoff --> FlightStatus
-```
-
----
-
-# Solución preliminar
+El proyecto está organizado como un paquete (`Proyecto_aeropuerto/`) con un
+script de entrada principal (`run.py`):
 
 ```text
-==============================
-        AIRPORT SYSTEM
-==============================
+Proyecto-Aeropuerto-POO/
+├── Proyecto_aeropuerto/
+│   ├── main.py                     # Arranca el programa y maneja el menú
+│   ├── Consola.py                  # Funciones para leer y validar datos del usuario
+│   ├── Aeropuerto.py                # Pasajero, Documento, Equipaje, ValidadorPasajero
+│   ├── torre_control.py             # Piloto, Aeronave, Vuelo, ControladorAereo
+│   ├── Sistemas/
+│   │   ├── sistema_aeropuerto.py    # Registro de pasajeros de principio a fin
+│   │   └── sistema_torre_control.py # Registro de vuelos y cola de prioridad
+│   ├── consultas/
+│   │   ├── sistema_consultas.py     # Búsquedas, filtros y reportes de pasajeros
+│   │   └── consultas_vuelos.py      # Búsquedas, filtros y reportes de vuelos
+│   └── reportes/                    # Reportes .txt generados al ejecutar el programa
+├── run.py                           # Archivo que se ejecuta para iniciar el sistema
+├── requirements.txt
+└── README.md
+```
 
-Passenger registered successfully
+### Diagrama de clases
 
-Passenger : Andres Perez
-Document  : CC 123456
 
-Checking baggage weight...
-Total baggage weight : 32 kg
-Extra baggage charge : $40
 
-Checking available seats...
-Seat assigned : 14A
+## Tecnologías y Conceptos Aplicados
 
-Generating boarding pass...
+- **Lenguaje:** Python 3.10+
+- **Encapsulamiento:** Cada clase agrupa solo los datos y métodos que le
+  corresponden (por ejemplo, `Pasajero` no sabe nada de vuelos, y `Vuelo` no
+  sabe nada de equipaje).
+- **Separación de responsabilidades:** El proyecto se dividió en paquetes
+  según lo que hace cada parte (modelos de datos, validación de reglas,
+  sistemas que orquestan el flujo, consultas y reportes).
+- **Cola de prioridad:** Se usa `queue.PriorityQueue` para que los vuelos
+  con mayor urgencia (emergencia, urgente) se procesen antes que los
+  vuelos normales, sin importar el orden en que se registraron.
+- **Manejo de excepciones:** Se capturan errores al momento de guardar los
+  reportes en archivo (`OSError`), y se valida todo lo que escribe el
+  usuario por consola (números, texto, sí/no) para que el programa no se
+  caiga si alguien escribe algo inválido.
+- **Reutilización de código:** La clase `Consola` centraliza las funciones
+  de lectura de datos para no repetir el mismo código de validación en
+  cada parte del sistema.
 
-==============================
-        BOARDING PASS
-==============================
+---
 
-Passenger : Andres Perez
-Flight    : AV203
-Origin    : Bogotá
-Destination : Madrid
-Seat      : 14A
+## Instalación y Ejecución
 
-Checking airplane fuel...
-Fuel status : OK
+No se necesitan librerías externas obligatorias, solo tener Python
+instalado.
 
-Calculating flight profitability...
-Flight profitability : $185000
+1. **Clonar el repositorio:**
+   ```bash
+   git clone https://github.com/dabarretor/Proyecto-Aeropuerto-POO.git
+   cd Proyecto-Aeropuerto-POO
+   ```
 
-FLIGHT DEPARTED SUCCESSFULLY
-==============================
+2. **Crear un entorno virtual** (para instalar dependencias sin afectar el
+   resto de tu computador):
+   ```bash
+   python3 -m venv venv
+   ```
+
+3. **Activarlo:**
+   - Linux / macOS:
+     ```bash
+     source venv/bin/activate
+     ```
+   - Windows (PowerShell):
+     ```powershell
+     venv\Scripts\Activate.ps1
+     ```
+
+4. **Instalar dependencias:**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+5. **Ejecutar el programa:**
+   ```bash
+   python run.py
+   ```
+
+## Casos de Uso Demostrados
+
+Al correr el programa, se pueden probar los siguientes flujos:
+
+1. **Registro y validación de pasajeros:** se piden los datos del
+   pasajero, su documento y su equipaje, y el sistema decide si queda
+   aprobado o rechazado según si cumple los requisitos (pasaporte vigente,
+   visa si la necesita, check-in y boleto válido).
+2. **Cobro por exceso de equipaje:** si el pasajero se pasa de maletas,
+   peso o dimensiones, su equipaje se manda a bodega y se le calcula un
+   cargo adicional.
+3. **Registro de vuelos con prioridad:** se registran uno o varios vuelos
+   con su piloto, aeronave y condiciones de despegue, indicando qué tan
+   urgente es cada uno (1 = emergencia, 5 = normal). El sistema los
+   procesa en ese orden, sin importar en qué orden se registraron.
+4. **Autorización o denegación de despegue:** cada vuelo se revisa contra
+   varios requisitos (horas de vuelo del piloto, disponibilidad de la
+   aeronave, capacidad de pasajeros, clima, pista y combustible). Si
+   alguno falla, el vuelo queda denegado y se muestra el motivo.
+5. **Consultas y filtros:** desde el menú se pueden buscar pasajeros o
+   vuelos por nombre/código, filtrar por destino, nacionalidad o rango de
+   edad, y ver estadísticas generales (tasa de aprobación, destino más
+   frecuente, dinero recaudado, etc.).
+6. **Exportación de reportes:** se puede generar un archivo `.txt` con el
+   resumen final de pasajeros aprobados/rechazados y otro con el resumen
+   de vuelos autorizados/denegados, guardados en `reportes/`.
+
+
