@@ -1,4 +1,5 @@
-from ..Aeropuerto import ValidadorPasajero, Pasajero, Documento, Equipaje
+from ..modelos import Pasajero, Documento, Equipaje
+from ..validaciones import ValidadorPasajero
 from ..Consola import Consola
 
 
